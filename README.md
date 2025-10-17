@@ -11,10 +11,28 @@ The Solace Cloud CLI
 
 
 <!-- toc -->
+* [Overview](#overview)
 * [Usage](#usage)
 * [Configuration](#configuration)
+* [Resources](#resources)
+* [Contributing](#contributing)
+* [Authors](#authors)
+* [License](#license)
 * [Commands](#commands)
 <!-- tocstop -->
+# Overview
+<!-- overview -->
+The Solace Cloud CLI is a command line interface that simplifies deployment and configuration automation when working with your Solace Cloud org and services.
+
+Use it to:
+
+* Create and manage Environments
+* Create and manage Mission Control and Event Broker Services
+* Script deployment of Solace Cloud resources in your org
+
+The CLI is built using the [oclif framework](https://oclif.io) that allows for plugin based development where users can add and extend the functionality of this CLI. For example, a new command can be added that can create and manage VPN Bridges, which uses the SEMP API to provision the bridges across two Message VPN on the same broker or across two brokers.
+
+<!-- overviewstop -->
 # Usage
 <!-- usage -->
 ```sh-session
@@ -42,7 +60,31 @@ The following Environment variables are optional:
 * SC_API_VERSION  - The API version of the Solace Cloud REST API. Default is `v2`.
 * SC_BASE_URL     - The location of your Solace Home Cloud account determines the base URL you use. Default is `https://api.solace.cloud/`
 
-<!-- configurationtop -->
+<!-- configurationstop -->
+# Resources
+<!-- resources -->
+This is not an officially supported Solace product.
+
+For more information try these resources:
+- Ask the [Solace Community](https://solace.community)
+- The Solace Developer Portal website at: https://solace.dev
+
+<!-- resourcesstop -->
+# Contributing
+<!-- contributing -->
+Contributions are encouraged! Please read [CONTRIBUTING.md](CONTRIBUTING.md) for details on our code of conduct, and the process for submitting pull requests to us.
+
+<!-- contributingstop -->
+# Authors
+<!-- authors -->
+See the list of [contributors](https://github.com/solacelabs/solace-cloud-cli/graphs/contributors) who participated in this project.
+
+<!-- authorsstop -->
+# License
+<!-- license -->
+See the [LICENSE](LICENSE) file for details.
+
+<!-- licensestop -->
 # Commands
 <!-- commands -->
 * [`sc help [COMMAND]`](#sc-help-command)
