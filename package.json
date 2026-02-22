@@ -46,7 +46,10 @@
   ],
   "homepage": "https://github.com/dishantlangayan/solace-cloud-cli",
   "keywords": [
-    "oclif"
+    "oclif",
+    "solace",
+    "cli",
+    "sc"
   ],
   "license": "Apache-2.0",
   "main": "dist/index.js",
@@ -59,12 +62,7 @@
       "@oclif/plugin-help",
       "@oclif/plugin-plugins"
     ],
-    "topicSeparator": " ",
-    "topics": {
-      "hello": {
-        "description": "Say hello to the world and others"
-      }
-    }
+    "topicSeparator": " "
   },
   "repository": "dishantlangayan/solace-cloud-cli",
   "scripts": {
