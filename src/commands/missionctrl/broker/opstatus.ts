@@ -1,15 +1,13 @@
+import {renderTable, ScCommand, ScConnection, sleep} from '@dishantlangayan/sc-cli-core'
 import {Flags} from '@oclif/core'
 import {MultiBar, Presets, SingleBar} from 'cli-progress'
 
-import {ScCommand} from '../../../sc-command.js'
 import {
   EventBrokerAllOperationsApiResponse,
   EventBrokerListApiResponse,
   EventBrokerOperationApiResponse,
   EventBrokerOperationDetail,
 } from '../../../types/broker.js'
-import {renderTable, sleep} from '../../../util/internal.js'
-import {ScConnection} from '../../../util/sc-connection.js'
 
 export default class MissionctrlBrokerOpstatus extends ScCommand<typeof MissionctrlBrokerOpstatus> {
   static override args = {}

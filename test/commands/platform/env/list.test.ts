@@ -1,10 +1,9 @@
+import {renderTable, ScConnection} from '@dishantlangayan/sc-cli-core'
 import {runCommand} from '@oclif/test'
 import {expect} from 'chai'
 import * as sinon from 'sinon'
 
 import {Environment} from '../../../../src/types/environment'
-import {renderTable} from '../../../../src/util/internal'
-import {ScConnection} from '../../../../src/util/sc-connection'
 import {anEnv, setEnvVariables} from '../../../util/test-utils'
 
 describe('platform:env:list', () => {

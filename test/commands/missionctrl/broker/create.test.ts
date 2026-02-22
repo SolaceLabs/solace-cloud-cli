@@ -1,10 +1,9 @@
+import {printObjectAsKeyValueTable, ScConnection} from '@dishantlangayan/sc-cli-core'
 import {runCommand} from '@oclif/test'
 import {expect} from 'chai'
 import * as sinon from 'sinon'
 
 import {EventBrokerOperationApiResponse} from '../../../../src/types/broker.js'
-import {printObjectAsKeyValueTable} from '../../../../src/util/internal.js'
-import {ScConnection} from '../../../../src/util/sc-connection.js'
 import {aBroker, anEnv, setEnvVariables} from '../../../util/test-utils'
 
 describe('missionctrl:broker:create', () => {

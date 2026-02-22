@@ -1,8 +1,8 @@
+import {ScConnection} from '@dishantlangayan/sc-cli-core'
 import {runCommand} from '@oclif/test'
 import {expect} from 'chai'
 import * as sinon from 'sinon'
 
-import {ScConnection} from '../../../../src/util/sc-connection'
 import {anEnv, setEnvVariables} from '../../../util/test-utils'
 
 describe('platform:env:delete', () => {

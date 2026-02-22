@@ -1,9 +1,7 @@
+import {printObjectAsKeyValueTable, ScCommand, ScConnection} from '@dishantlangayan/sc-cli-core'
 import {Flags} from '@oclif/core'
 
-import {ScCommand} from '../../../sc-command.js'
 import {EnvironmentApiResponse, EnvironmentListApiResponse} from '../../../types/environment.js'
-import {printObjectAsKeyValueTable} from '../../../util/internal.js'
-import {ScConnection} from '../../../util/sc-connection.js'
 
 export default class PlatformEnvDisplay extends ScCommand<typeof PlatformEnvDisplay> {
   static override args = {}

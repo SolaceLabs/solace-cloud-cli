@@ -1,10 +1,9 @@
+import {printObjectAsKeyValueTable, ScConnection} from '@dishantlangayan/sc-cli-core'
 import {runCommand} from '@oclif/test'
 import {expect} from 'chai'
 import * as sinon from 'sinon'
 
 import {EnvironmentApiResponse, EnvironmentListApiResponse} from '../../../../src/types/environment'
-import {printObjectAsKeyValueTable} from '../../../../src/util/internal'
-import {ScConnection} from '../../../../src/util/sc-connection'
 import {anEnv, setEnvVariables} from '../../../util/test-utils'
 
 describe('platform:env:display', () => {

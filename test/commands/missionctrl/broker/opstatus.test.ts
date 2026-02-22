@@ -1,3 +1,4 @@
+import {renderTable, ScConnection} from '@dishantlangayan/sc-cli-core'
 import {runCommand} from '@oclif/test'
 import {expect} from 'chai'
 import * as sinon from 'sinon'
@@ -7,8 +8,6 @@ import {
   EventBrokerOperationApiResponse,
   EventBrokerOperationDetail,
 } from '../../../../src/types/broker.js'
-import {renderTable, sleepModule} from '../../../../src/util/internal.js'
-import {ScConnection} from '../../../../src/util/sc-connection.js'
 import {
   createProgressLogsWithStatus,
   createTestAllOperationsResponse,
@@ -155,8 +154,8 @@ describe('missionctrl:broker:opstatus', () => {
       .onSecondCall()
       .returns(Promise.resolve(completedResponse))
 
-    // Stub the sleep function to make the test run faster
-    const sleepStub = sinon.stub(sleepModule, 'sleep').resolves()
+    // Use fake timers to speed up the test
+    const clock = sinon.useFakeTimers()
 
     const opStatusArray = [
       ['Operation Id', 'Operation Type', 'Status', 'Created Time', 'Completed Time'],
@@ -171,15 +170,20 @@ describe('missionctrl:broker:opstatus', () => {
 
     try {
       // Act
-      const {stdout} = await runCommand(`missionctrl:broker:opstatus -b ${brokerId} --show-progress --wait-ms 100`)
+      const commandPromise = runCommand(`missionctrl:broker:opstatus -b ${brokerId} --show-progress --wait-ms 100`)
+
+      // Fast-forward time to skip the sleep delay
+      await clock.tickAsync(200)
+
+      const {stdout} = await commandPromise
 
       // Assert
       expect(scConnStub.callCount).to.be.greaterThan(1) // Should make multiple API calls for progress
       expect(scConnStub.secondCall.args[0]).to.contain('expand=progressLogs') // Second call should include expand parameter
       expect(stdout).to.contain(renderTable(opStatusArray))
     } finally {
-      // Restore stubs
-      sleepStub.restore()
+      // Restore fake timers
+      clock.restore()
     }
   })
 })

@@ -1,8 +1,7 @@
+import {ScCommand, ScConnection} from '@dishantlangayan/sc-cli-core'
 import {Flags} from '@oclif/core'
 
-import {ScCommand} from '../../../sc-command.js'
 import {EnvironmentListApiResponse} from '../../../types/environment.js'
-import {ScConnection} from '../../../util/sc-connection.js'
 
 export default class PlatformEnvDelete extends ScCommand<typeof PlatformEnvDelete> {
   static override args = {}

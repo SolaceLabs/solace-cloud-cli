@@ -1,10 +1,9 @@
+import {renderTable, ScConnection} from '@dishantlangayan/sc-cli-core'
 import {runCommand} from '@oclif/test'
 import {expect} from 'chai'
 import * as sinon from 'sinon'
 
 import {EventBrokerListApiResponse, EventBrokerServiceDetail} from '../../../../src/types/broker.js'
-import {renderTable} from '../../../../src/util/internal.js'
-import {ScConnection} from '../../../../src/util/sc-connection.js'
 import {aBroker, setEnvVariables} from '../../../util/test-utils.js'
 
 describe('missionctrl:broker:list', () => {
