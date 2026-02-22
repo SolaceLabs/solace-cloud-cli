@@ -441,7 +441,7 @@ DESCRIPTION
   Token Permissions: [ environments:edit ]
 
 EXAMPLES
-  $ sc platform env create --name=MyEnvironment --desc="My environment description" --isDefault --isProduction
+  $ sc platform env create --name=MyEnvironment --description="My environment description" --isDefault --isProduction
 ```
 
 _See code: [src/commands/platform/env/create.ts](https://github.com/dishantlangayan/solace-cloud-cli/blob/v0.1.1/src/commands/platform/env/create.ts)_
@@ -571,9 +571,9 @@ DESCRIPTION
 
 
 EXAMPLES
-  $ sc platform env update --name=MyEnvName --new-name=MyNewEnvName --desc="My description to update" --isDefault
+  $ sc platform env update --name=MyEnvName --new-name=MyNewEnvName --description="My description to update" --isDefault
 
-  $ sc platform env update --env-id=MyEnvId --new-name=MyNewEnvName --desc="My description to update" --isDefault
+  $ sc platform env update --env-id=MyEnvId --new-name=MyNewEnvName --description="My description to update" --isDefault
 ```
 
 _See code: [src/commands/platform/env/update.ts](https://github.com/dishantlangayan/solace-cloud-cli/blob/v0.1.1/src/commands/platform/env/update.ts)_
