@@ -22,7 +22,7 @@ The Solace Cloud CLI
 <!-- tocstop -->
 # Overview
 <!-- overview -->
-The Solace Cloud CLI is a command line interface that simplifies deployment and configuration automation when working with your Solace Cloud org and services.
+The Solace Cloud CLI is a command line interface that simplifies deployment, configuration, and automation when working with your Solace Cloud org and services.
 
 Use it to:
 
