@@ -40,7 +40,7 @@ $ npm install -g @dishantlangayan/solace-cloud-cli
 $ sc COMMAND
 running command...
 $ sc (--version)
-@dishantlangayan/solace-cloud-cli/0.2.1 darwin-arm64 node-v24.1.0
+@dishantlangayan/solace-cloud-cli/0.2.1 linux-x64 node-v22.22.0
 $ sc --help [COMMAND]
 USAGE
   $ sc COMMAND
@@ -484,8 +484,6 @@ GLOBAL FLAGS
 
 DESCRIPTION
   Get a listing of event broker services.
-
-  The maximum number of objects that can be returned in a single page is 100. Default is 10.
 
   Your token must have one of the permissions listed in the Token Permissions.
 
