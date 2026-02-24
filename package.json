@@ -9,9 +9,18 @@
   "bugs": "https://github.com/dishantlangayan/solace-cloud-cli/issues",
   "dependencies": {
     "@dishantlangayan/sc-cli-core": "^0.1.0",
+    "@dishantlangayan/sc-plugin-queue": "^0.1.1",
     "@oclif/core": "^4",
+    "@oclif/plugin-autocomplete": "^3.2.40",
+    "@oclif/plugin-commands": "^4.1.40",
     "@oclif/plugin-help": "^6",
+    "@oclif/plugin-not-found": "^3.2.74",
     "@oclif/plugin-plugins": "^5",
+    "@oclif/plugin-search": "^1.2.38",
+    "@oclif/plugin-update": "^4.7.19",
+    "@oclif/plugin-version": "^2.2.36",
+    "@oclif/plugin-warn-if-update-available": "^3.1.55",
+    "@oclif/plugin-which": "^3.2.43",
     "@types/cli-progress": "^3.11.6",
     "axios": "^1.9.0",
     "cli-progress": "^3.12.0",
@@ -59,8 +68,17 @@
     "dirname": "sc",
     "commands": "./dist/commands",
     "plugins": [
+      "@oclif/plugin-autocomplete",
+      "@oclif/plugin-commands",
       "@oclif/plugin-help",
-      "@oclif/plugin-plugins"
+      "@oclif/plugin-not-found",
+      "@oclif/plugin-plugins",
+      "@oclif/plugin-search",
+      "@oclif/plugin-update",
+      "@oclif/plugin-version",
+      "@oclif/plugin-warn-if-update-available",
+      "@oclif/plugin-which",
+      "@dishantlangayan/sc-plugin-queue"
     ],
     "topicSeparator": " "
   },
