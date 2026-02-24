@@ -40,7 +40,7 @@ $ npm install -g @dishantlangayan/solace-cloud-cli
 $ sc COMMAND
 running command...
 $ sc (--version)
-@dishantlangayan/solace-cloud-cli/0.2.0 darwin-arm64 node-v24.1.0
+@dishantlangayan/solace-cloud-cli/0.2.1 darwin-arm64 node-v24.1.0
 $ sc --help [COMMAND]
 USAGE
   $ sc COMMAND
@@ -87,6 +87,10 @@ See the [LICENSE](LICENSE) file for details.
 <!-- licensestop -->
 # Commands
 <!-- commands -->
+* [`sc autocomplete [SHELL]`](#sc-autocomplete-shell)
+* [`sc broker queue create`](#sc-broker-queue-create)
+* [`sc broker queue list`](#sc-broker-queue-list)
+* [`sc commands`](#sc-commands)
 * [`sc help [COMMAND]`](#sc-help-command)
 * [`sc missionctrl broker create`](#sc-missionctrl-broker-create)
 * [`sc missionctrl broker delete`](#sc-missionctrl-broker-delete)
@@ -110,6 +114,199 @@ See the [LICENSE](LICENSE) file for details.
 * [`sc plugins uninstall [PLUGIN]`](#sc-plugins-uninstall-plugin)
 * [`sc plugins unlink [PLUGIN]`](#sc-plugins-unlink-plugin)
 * [`sc plugins update`](#sc-plugins-update)
+* [`sc search`](#sc-search)
+* [`sc update [CHANNEL]`](#sc-update-channel)
+* [`sc version`](#sc-version)
+* [`sc which`](#sc-which)
+
+## `sc autocomplete [SHELL]`
+
+Display autocomplete installation instructions.
+
+```
+USAGE
+  $ sc autocomplete [SHELL] [-r]
+
+ARGUMENTS
+  [SHELL]  (zsh|bash|powershell) Shell type
+
+FLAGS
+  -r, --refresh-cache  Refresh cache (ignores displaying instructions)
+
+DESCRIPTION
+  Display autocomplete installation instructions.
+
+EXAMPLES
+  $ sc autocomplete
+
+  $ sc autocomplete bash
+
+  $ sc autocomplete zsh
+
+  $ sc autocomplete powershell
+
+  $ sc autocomplete --refresh-cache
+```
+
+_See code: [@oclif/plugin-autocomplete](https://github.com/oclif/plugin-autocomplete/blob/v3.2.40/src/commands/autocomplete/index.ts)_
+
+## `sc broker queue create`
+
+Create a Queue on a Solace Cloud Broker.
+
+```
+USAGE
+  $ sc broker queue create -q <value> [--json] [--log-level debug|warn|error|info|trace] [-a exclusive|non-exclusive] [-b
+    <value>] [-n <value>] [--consumer-ack-propagation-enabled] [--dead-msg-queue <value>] [--delivery-count-enabled]
+    [--delivery-delay <value>] [--egress-enabled] [--ingress-enabled] [--max-bind-count <value>]
+    [--max-delivered-unacked-msgs-per-flow <value>] [--max-msg-size <value>] [-s <value>] [--max-redelivery-count
+    <value>] [--max-ttl <value>] [-o <value>] [-p consume|delete|modify-topic|no-access|read-only]
+    [--redelivery-delay-enabled] [--redelivery-delay-initial-interval <value>] [--redelivery-delay-max-interval <value>]
+    [--redelivery-delay-multiplier <value>] [--redelivery-enabled] [--reject-low-priority-msg-enabled]
+    [--reject-low-priority-msg-limit <value>] [--reject-msg-to-sender-on-discard-behavior
+    always|never|when-queue-enabled] [--respect-msg-priority-enabled] [--respect-ttl-enabled]
+
+FLAGS
+  -a, --access-type=<option>                               [default: exclusive] The access type for the queue.
+                                                           <options: exclusive|non-exclusive>
+  -b, --broker-id=<value>                                  Id of the event broker service.
+  -n, --broker-name=<value>                                Name of the event broker service.
+  -o, --owner=<value>                                      The client username that owns the queue and has permission
+                                                           equivalent to delete.
+  -p, --permission=<option>                                [default: no-access] The permission level for all consumers
+                                                           of the queue, excluding the owner.
+                                                           <options: consume|delete|modify-topic|no-access|read-only>
+  -q, --queue-name=<value>                                 (required) The name of the queue to create.
+  -s, --max-msg-spool-usage=<value>                        The maximum message spool usage allowed by the queue, in
+                                                           megabytes (MB).
+      --[no-]consumer-ack-propagation-enabled              Enable or disable the propagation of consumer
+                                                           acknowledgments.
+      --dead-msg-queue=<value>                             The name of the Dead Message Queue.
+      --[no-]delivery-count-enabled                        Enable or disable delivery count on the messages.
+      --delivery-delay=<value>                             The delay, in seconds, to apply to messages arriving on the
+                                                           queue before the messages are eligible for delivery.
+      --[no-]egress-enabled                                Enable or disable egress (message consumption) from the
+                                                           queue.
+      --[no-]ingress-enabled                               Enable or disable ingress (message reception) to the queue.
+      --max-bind-count=<value>                             The maximum number of consumer flows that can bind to the
+                                                           queue.
+      --max-delivered-unacked-msgs-per-flow=<value>        The maximum number of messages delivered but not acknowledged
+                                                           per flow.
+      --max-msg-size=<value>                               The maximum message size allowed in the queue, in bytes.
+      --max-redelivery-count=<value>                       The maximum number of times a message will be redelivered
+                                                           before it is discarded or moved to the DMQ.
+      --max-ttl=<value>                                    The maximum time in seconds a message can stay in the queue
+                                                           when respect-ttl-enabled is true.
+      --[no-]redelivery-delay-enabled                      Enable or disable a message redelivery delay.
+      --redelivery-delay-initial-interval=<value>          The delay to be used between the first 2 redelivery attempts,
+                                                           in milliseconds.
+      --redelivery-delay-max-interval=<value>              The maximum delay to be used between any 2 redelivery
+                                                           attempts, in milliseconds.
+      --redelivery-delay-multiplier=<value>                The amount each delay interval is multiplied by after each
+                                                           failed delivery attempt.
+      --[no-]redelivery-enabled                            Enable or disable message redelivery.
+      --[no-]reject-low-priority-msg-enabled               Enable or disable the checking of low priority messages
+                                                           against the reject-low-priority-msg-limit.
+      --reject-low-priority-msg-limit=<value>              The number of messages of any priority above which low
+                                                           priority messages are not admitted.
+      --reject-msg-to-sender-on-discard-behavior=<option>  Determines when to return negative acknowledgments (NACKs) to
+                                                           sending clients on message discards.
+                                                           <options: always|never|when-queue-enabled>
+      --[no-]respect-msg-priority-enabled                  Enable or disable the respecting of message priority.
+      --[no-]respect-ttl-enabled                           Enable or disable the respecting of the time-to-live (TTL)
+                                                           for messages.
+
+GLOBAL FLAGS
+  --json                Format output as json.
+  --log-level=<option>  [default: info] Specify level for logging.
+                        <options: debug|warn|error|info|trace>
+
+DESCRIPTION
+  Create a Queue on a Solace Cloud Broker.
+
+  Your token must have one of the permissions listed in the Token Permissions.
+
+  Token Permissions: [ mission_control:access or services:get or services:get:self or services:view or
+  services:view:self ]
+
+EXAMPLES
+  $ sc broker queue create --broker-id=MyBrokerId --queue-name=myQueue
+
+  $ sc broker queue create --broker-name=MyBrokerName --queue-name=myQueue --access-type=exclusive
+
+  $ sc broker queue create --broker-name=MyBrokerName --queue-name=myQueue --owner=user1 --permission=consume
+
+  $ sc broker queue create --broker-id=MyBrokerId --queue-name=myQueue --max-spool-usage=100 --ingress-enabled --egress-enabled
+```
+
+_See code: [@dishantlangayan/sc-plugin-queue](https://github.com/dishantlangayan/sc-plugin-queue/blob/v0.1.1/src/commands/broker/queue/create.ts)_
+
+## `sc broker queue list`
+
+Get a list of Queue objects from the Solace Cloud Broker.
+
+```
+USAGE
+  $ sc broker queue list [--json] [--log-level debug|warn|error|info|trace] [-b <value>] [-n <value>] [-c <value>] [-q
+    <value>]
+
+FLAGS
+  -b, --broker-id=<value>    Id of the event broker service.
+  -c, --count=<value>        [default: 10] Limit the number of queues returned
+  -n, --broker-name=<value>  Name of the event broker service.
+  -q, --queue-name=<value>   Name of the queue(s) to filter.
+
+GLOBAL FLAGS
+  --json                Format output as json.
+  --log-level=<option>  [default: info] Specify level for logging.
+                        <options: debug|warn|error|info|trace>
+
+DESCRIPTION
+  Get a list of Queue objects from the Solace Cloud Broker.
+
+  Token Permissions: [ mission_control:access or services:get or services:get:self or services:view or
+  services:view:self ]
+
+EXAMPLES
+  $ sc broker queue list --broker-id=MyBrokerId
+
+  $ sc broker queue list --broker-name=MyBrokerName
+
+  $ sc broker queue list --broker-name=MyBrokerName --count=10
+
+  $ sc broker queue list --broker-name=MyBrokerName --queue-name=test*"
+```
+
+_See code: [@dishantlangayan/sc-plugin-queue](https://github.com/dishantlangayan/sc-plugin-queue/blob/v0.1.1/src/commands/broker/queue/list.ts)_
+
+## `sc commands`
+
+List all sc commands.
+
+```
+USAGE
+  $ sc commands [--json] [-c id|plugin|summary|type... | --tree] [--deprecated] [-x | ] [--hidden]
+    [--no-truncate | ] [--sort id|plugin|summary|type | ]
+
+FLAGS
+  -c, --columns=<option>...  Only show provided columns (comma-separated).
+                             <options: id|plugin|summary|type>
+  -x, --extended             Show extra columns.
+      --deprecated           Show deprecated commands.
+      --hidden               Show hidden commands.
+      --no-truncate          Do not truncate output.
+      --sort=<option>        [default: id] Property to sort by.
+                             <options: id|plugin|summary|type>
+      --tree                 Show tree of commands.
+
+GLOBAL FLAGS
+  --json  Format output as json.
+
+DESCRIPTION
+  List all sc commands.
+```
+
+_See code: [@oclif/plugin-commands](https://github.com/oclif/plugin-commands/blob/v4.1.40/src/commands/commands.ts)_
 
 ## `sc help [COMMAND]`
 
@@ -188,7 +385,7 @@ EXAMPLES
   $ sc missionctrl broker create --name=MyBrokerName --datacenter-id=eks-ca-central-1a --service-class-id=DEVELOPER
 ```
 
-_See code: [src/commands/missionctrl/broker/create.ts](https://github.com/dishantlangayan/solace-cloud-cli/blob/v0.2.0/src/commands/missionctrl/broker/create.ts)_
+_See code: [src/commands/missionctrl/broker/create.ts](https://github.com/dishantlangayan/solace-cloud-cli/blob/v0.2.1/src/commands/missionctrl/broker/create.ts)_
 
 ## `sc missionctrl broker delete`
 
@@ -220,7 +417,7 @@ EXAMPLES
   $ sc missionctrl broker delete --name=MyBrokerName
 ```
 
-_See code: [src/commands/missionctrl/broker/delete.ts](https://github.com/dishantlangayan/solace-cloud-cli/blob/v0.2.0/src/commands/missionctrl/broker/delete.ts)_
+_See code: [src/commands/missionctrl/broker/delete.ts](https://github.com/dishantlangayan/solace-cloud-cli/blob/v0.2.1/src/commands/missionctrl/broker/delete.ts)_
 
 ## `sc missionctrl broker display`
 
@@ -251,7 +448,7 @@ EXAMPLES
   $ sc missionctrl broker display
 ```
 
-_See code: [src/commands/missionctrl/broker/display.ts](https://github.com/dishantlangayan/solace-cloud-cli/blob/v0.2.0/src/commands/missionctrl/broker/display.ts)_
+_See code: [src/commands/missionctrl/broker/display.ts](https://github.com/dishantlangayan/solace-cloud-cli/blob/v0.2.1/src/commands/missionctrl/broker/display.ts)_
 
 ## `sc missionctrl broker list`
 
@@ -288,6 +485,8 @@ GLOBAL FLAGS
 DESCRIPTION
   Get a listing of event broker services.
 
+  The maximum number of objects that can be returned in a single page is 100. Default is 10.
+
   Your token must have one of the permissions listed in the Token Permissions.
 
   Token Permissions: [ `mission_control:access` **or** `services:get` **or** `services:get:self` **or** `services:view`
@@ -299,7 +498,7 @@ EXAMPLES
   $ sc missionctrl broker list --name=MyBrokerName --pageNumber=1 --pageSize=10 --sort=name:asc
 ```
 
-_See code: [src/commands/missionctrl/broker/list.ts](https://github.com/dishantlangayan/solace-cloud-cli/blob/v0.2.0/src/commands/missionctrl/broker/list.ts)_
+_See code: [src/commands/missionctrl/broker/list.ts](https://github.com/dishantlangayan/solace-cloud-cli/blob/v0.2.1/src/commands/missionctrl/broker/list.ts)_
 
 ## `sc missionctrl broker opstatus`
 
@@ -336,7 +535,7 @@ EXAMPLES
   $ sc missionctrl broker opstatus -n <broker-name>
 ```
 
-_See code: [src/commands/missionctrl/broker/opstatus.ts](https://github.com/dishantlangayan/solace-cloud-cli/blob/v0.2.0/src/commands/missionctrl/broker/opstatus.ts)_
+_See code: [src/commands/missionctrl/broker/opstatus.ts](https://github.com/dishantlangayan/solace-cloud-cli/blob/v0.2.1/src/commands/missionctrl/broker/opstatus.ts)_
 
 ## `sc missionctrl broker state`
 
@@ -370,7 +569,7 @@ EXAMPLES
   $ sc missionctrl broker state --name=MyBrokerName
 ```
 
-_See code: [src/commands/missionctrl/broker/state.ts](https://github.com/dishantlangayan/solace-cloud-cli/blob/v0.2.0/src/commands/missionctrl/broker/state.ts)_
+_See code: [src/commands/missionctrl/broker/state.ts](https://github.com/dishantlangayan/solace-cloud-cli/blob/v0.2.1/src/commands/missionctrl/broker/state.ts)_
 
 ## `sc missionctrl broker update`
 
@@ -410,7 +609,7 @@ EXAMPLES
   $ sc missionctrl broker update --name <name> --new-name <new-name>
 ```
 
-_See code: [src/commands/missionctrl/broker/update.ts](https://github.com/dishantlangayan/solace-cloud-cli/blob/v0.2.0/src/commands/missionctrl/broker/update.ts)_
+_See code: [src/commands/missionctrl/broker/update.ts](https://github.com/dishantlangayan/solace-cloud-cli/blob/v0.2.1/src/commands/missionctrl/broker/update.ts)_
 
 ## `sc platform env create`
 
@@ -444,7 +643,7 @@ EXAMPLES
   $ sc platform env create --name=MyEnvironment --description="My environment description" --isDefault --isProduction
 ```
 
-_See code: [src/commands/platform/env/create.ts](https://github.com/dishantlangayan/solace-cloud-cli/blob/v0.2.0/src/commands/platform/env/create.ts)_
+_See code: [src/commands/platform/env/create.ts](https://github.com/dishantlangayan/solace-cloud-cli/blob/v0.2.1/src/commands/platform/env/create.ts)_
 
 ## `sc platform env delete`
 
@@ -474,7 +673,7 @@ EXAMPLES
   $ sc platform env delete --env-id=MyEnvId
 ```
 
-_See code: [src/commands/platform/env/delete.ts](https://github.com/dishantlangayan/solace-cloud-cli/blob/v0.2.0/src/commands/platform/env/delete.ts)_
+_See code: [src/commands/platform/env/delete.ts](https://github.com/dishantlangayan/solace-cloud-cli/blob/v0.2.1/src/commands/platform/env/delete.ts)_
 
 ## `sc platform env display`
 
@@ -506,7 +705,7 @@ EXAMPLES
   $ sc platform env display --env-id=MyEnvId
 ```
 
-_See code: [src/commands/platform/env/display.ts](https://github.com/dishantlangayan/solace-cloud-cli/blob/v0.2.0/src/commands/platform/env/display.ts)_
+_See code: [src/commands/platform/env/display.ts](https://github.com/dishantlangayan/solace-cloud-cli/blob/v0.2.1/src/commands/platform/env/display.ts)_
 
 ## `sc platform env list`
 
@@ -539,7 +738,7 @@ EXAMPLES
   $ sc platform env list --name=Default --pageNumber=1 --pageSize=10 --sort=name:ASC
 ```
 
-_See code: [src/commands/platform/env/list.ts](https://github.com/dishantlangayan/solace-cloud-cli/blob/v0.2.0/src/commands/platform/env/list.ts)_
+_See code: [src/commands/platform/env/list.ts](https://github.com/dishantlangayan/solace-cloud-cli/blob/v0.2.1/src/commands/platform/env/list.ts)_
 
 ## `sc platform env update`
 
@@ -576,7 +775,7 @@ EXAMPLES
   $ sc platform env update --env-id=MyEnvId --new-name=MyNewEnvName --description="My description to update" --isDefault
 ```
 
-_See code: [src/commands/platform/env/update.ts](https://github.com/dishantlangayan/solace-cloud-cli/blob/v0.2.0/src/commands/platform/env/update.ts)_
+_See code: [src/commands/platform/env/update.ts](https://github.com/dishantlangayan/solace-cloud-cli/blob/v0.2.1/src/commands/platform/env/update.ts)_
 
 ## `sc plugins`
 
@@ -867,4 +1066,112 @@ DESCRIPTION
 ```
 
 _See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v5.4.43/src/commands/plugins/update.ts)_
+
+## `sc search`
+
+Search for a command.
+
+```
+USAGE
+  $ sc search
+
+DESCRIPTION
+  Search for a command.
+
+  Once you select a command, hit enter and it will show the help for that command.
+```
+
+_See code: [@oclif/plugin-search](https://github.com/oclif/plugin-search/blob/v1.2.38/src/commands/search.ts)_
+
+## `sc update [CHANNEL]`
+
+update the sc CLI
+
+```
+USAGE
+  $ sc update [CHANNEL] [--force |  | [-a | -v <value> | -i]] [-b ]
+
+FLAGS
+  -a, --available        See available versions.
+  -b, --verbose          Show more details about the available versions.
+  -i, --interactive      Interactively select version to install. This is ignored if a channel is provided.
+  -v, --version=<value>  Install a specific version.
+      --force            Force a re-download of the requested version.
+
+DESCRIPTION
+  update the sc CLI
+
+EXAMPLES
+  Update to the stable channel:
+
+    $ sc update stable
+
+  Update to a specific version:
+
+    $ sc update --version 1.0.0
+
+  Interactively select version:
+
+    $ sc update --interactive
+
+  See available versions:
+
+    $ sc update --available
+```
+
+_See code: [@oclif/plugin-update](https://github.com/oclif/plugin-update/blob/v4.7.19/src/commands/update.ts)_
+
+## `sc version`
+
+```
+USAGE
+  $ sc version [--json] [--verbose]
+
+FLAGS
+  --verbose  Show additional information about the CLI.
+
+GLOBAL FLAGS
+  --json  Format output as json.
+
+FLAG DESCRIPTIONS
+  --verbose  Show additional information about the CLI.
+
+    Additionally shows the architecture, node version, operating system, and versions of plugins that the CLI is using.
+```
+
+_See code: [@oclif/plugin-version](https://github.com/oclif/plugin-version/blob/v2.2.36/src/commands/version.ts)_
+
+## `sc which`
+
+Show which plugin a command is in.
+
+```
+USAGE
+  $ sc which [--json]
+
+GLOBAL FLAGS
+  --json  Format output as json.
+
+DESCRIPTION
+  Show which plugin a command is in.
+
+EXAMPLES
+  See which plugin the `help` command is in:
+
+    $ sc which help
+
+  Use colon separators.
+
+    $ sc which foo:bar:baz
+
+  Use spaces as separators.
+
+    $ sc which foo bar baz
+
+  Wrap command in quotes to use spaces as separators.
+
+    $ sc which "foo bar baz"
+```
+
+_See code: [@oclif/plugin-which](https://github.com/oclif/plugin-which/blob/v3.2.43/src/commands/which.ts)_
 <!-- commandsstop -->
