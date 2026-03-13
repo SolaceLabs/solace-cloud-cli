@@ -1,4 +1,4 @@
-import {OrgConfig, OrgError, OrgErrorCode, OrgManager} from '@dishantlangayan/sc-cli-core'
+import {OrgConfig, OrgManager} from '@dishantlangayan/sc-cli-core'
 import {runCommand} from '@oclif/test'
 import {expect} from 'chai'
 import * as sinon from 'sinon'
@@ -11,7 +11,8 @@ describe('account:login', () => {
 
   beforeEach(() => {
     orgManagerStub = sinon.createStubInstance(OrgManager)
-    getOrgManagerStub = sinon.stub(AccountLogin.prototype as any, 'getOrgManager').resolves(orgManagerStub)
+    // Use unknown assertion to stub protected method
+    getOrgManagerStub = sinon.stub(AccountLogin.prototype as unknown as Record<string, unknown>, 'getOrgManager').resolves(orgManagerStub)
   })
 
   afterEach(() => {
@@ -108,7 +109,7 @@ describe('account:login', () => {
     orgManagerStub.addOrg.resolves()
 
     // Stub confirmation to auto-accept
-    const confirmStub = sinon.stub(AccountLogin.prototype as any, 'promptForConfirmation').resolves(true)
+    const confirmStub = sinon.stub(AccountLogin.prototype as unknown as Record<string, unknown>, 'promptForConfirmation').resolves(true)
 
     // Act
     const {stdout} = await runCommand(`account:login --org=${testOrg} --no-prompt`)
@@ -131,7 +132,7 @@ describe('account:login', () => {
     orgManagerStub.orgExists.resolves(true)
 
     // Stub confirmation to decline
-    const confirmStub = sinon.stub(AccountLogin.prototype as any, 'promptForConfirmation').resolves(false)
+    const confirmStub = sinon.stub(AccountLogin.prototype as unknown as Record<string, unknown>, 'promptForConfirmation').resolves(false)
 
     // Act
     const {stdout} = await runCommand(`account:login --org=${testOrg} --no-prompt`)
@@ -157,12 +158,14 @@ describe('account:login', () => {
     orgManagerStub.addOrg.resolves()
 
     // Act
-    const result: any = await runCommand(`account:login --org=${testOrg} --alias=${testAlias} --no-prompt --json`)
+    const result = await runCommand<OrgConfig>(`account:login --org=${testOrg} --alias=${testAlias} --no-prompt --json`)
 
     // Assert
     expect(result.result).to.exist
-    expect(result.result.orgId).to.equal(testOrg)
-    expect(result.result.alias).to.equal(testAlias)
-    expect(result.result.accessToken).to.equal(testToken)
+    if (result.result) {
+      expect(result.result.orgId).to.equal(testOrg)
+      expect(result.result.alias).to.equal(testAlias)
+      expect(result.result.accessToken).to.equal(testToken)
+    }
   })
 })
