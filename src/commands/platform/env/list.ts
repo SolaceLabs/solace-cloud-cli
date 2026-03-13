@@ -1,6 +1,7 @@
-import {renderTable, ScCommand, ScConnection} from '@dishantlangayan/sc-cli-core'
+import {renderTable, ScCommand} from '@dishantlangayan/sc-cli-core'
 import {Flags} from '@oclif/core'
 
+import {resolveOrgConnection} from '../../../lib/org-utils.js'
 import {Environment, EnvironmentListApiResponse} from '../../../types/environment.js'
 
 export default class PlatformEnvList extends ScCommand<typeof PlatformEnvList> {
@@ -10,12 +11,17 @@ export default class PlatformEnvList extends ScCommand<typeof PlatformEnvList> {
   Required token permissions: [ environments:view ]`
   static override examples = [
     '<%= config.bin %> <%= command.id %>',
+    '<%= config.bin %> <%= command.id %> --org=my-org',
     '<%= config.bin %> <%= command.id %> --name=Default --pageNumber=1 --pageSize=10 --sort=name:ASC',
   ]
   static override flags = {
     name: Flags.string({
       char: 'n',
       description: 'Name of the environment to match on.',
+    }),
+    org: Flags.string({
+      char: 'o',
+      description: 'Organization ID or alias to use. If not specified, uses the default organization.',
     }),
     pageNumber: Flags.integer({
       char: 'p',
@@ -35,7 +41,7 @@ export default class PlatformEnvList extends ScCommand<typeof PlatformEnvList> {
   public async run(): Promise<EnvironmentListApiResponse> {
     const {flags} = await this.parse(PlatformEnvList)
 
-    const conn = new ScConnection()
+    const conn = await resolveOrgConnection(this, flags.org)
 
     const pageSize = flags.pageSize ?? 10
     const pageNumber = flags.pageNumber ?? 1
