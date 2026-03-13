@@ -1,6 +1,7 @@
-import {renderTable, ScCommand, ScConnection} from '@dishantlangayan/sc-cli-core'
+import {renderTable, ScCommand} from '@dishantlangayan/sc-cli-core'
 import {Flags} from '@oclif/core'
 
+import {resolveOrgConnection} from '../../../lib/org-utils.js'
 import {EventBrokerListApiResponse, EventBrokerServiceDetail} from '../../../types/broker.js'
 
 export default class MissionctrlBrokerList extends ScCommand<typeof MissionctrlBrokerList> {
@@ -12,12 +13,17 @@ Your token must have one of the permissions listed in the Token Permissions.
 Token Permissions: [ \`mission_control:access\` **or** \`services:get\` **or** \`services:get:self\` **or** \`services:view\` **or** \`services:view:self\` ]`
   static override examples = [
     '<%= config.bin %> <%= command.id %>',
+    '<%= config.bin %> <%= command.id %> --org=my-org',
     '<%= config.bin %> <%= command.id %> --name=MyBrokerName --pageNumber=1 --pageSize=10 --sort=name:asc',
   ]
   static override flags = {
     name: Flags.string({
       char: 'n',
       description: 'Name of the event broker service to match on.',
+    }),
+    org: Flags.string({
+      char: 'o',
+      description: 'Organization ID or alias to use. If not specified, uses the default organization.',
     }),
     pageNumber: Flags.integer({
       description: 'The page number to get. Defaults to 1',
@@ -40,7 +46,7 @@ Token Permissions: [ \`mission_control:access\` **or** \`services:get\` **or** \
   public async run(): Promise<EventBrokerListApiResponse> {
     const {flags} = await this.parse(MissionctrlBrokerList)
 
-    const conn = new ScConnection()
+    const conn = await resolveOrgConnection(this, flags.org)
 
     const pageSize = flags.pageSize ?? 10
     const pageNumber = flags.pageNumber ?? 1

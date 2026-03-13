@@ -1,6 +1,7 @@
-import {printObjectAsKeyValueTable, ScCommand, ScConnection} from '@dishantlangayan/sc-cli-core'
+import {printObjectAsKeyValueTable, ScCommand} from '@dishantlangayan/sc-cli-core'
 import {Flags} from '@oclif/core'
 
+import {resolveOrgConnection} from '../../../lib/org-utils.js'
 import {EventBrokerListApiResponse, EventBrokerOperationApiResponse} from '../../../types/broker.js'
 
 export default class MissionctrlBrokerUpdate extends ScCommand<typeof MissionctrlBrokerUpdate> {
@@ -14,7 +15,7 @@ export default class MissionctrlBrokerUpdate extends ScCommand<typeof Missionctr
   static override examples = [
     '<%= config.bin %> <%= command.id %>',
     '<%= config.bin %> <%= command.id %> --broker-id <broker-id> --new-name <new-name>',
-    '<%= config.bin %> <%= command.id %> --name <name> --new-name <new-name>',
+    '<%= config.bin %> <%= command.id %> --org=my-org --name <name> --new-name <new-name>',
   ]
   static override flags = {
     'broker-id': Flags.string({
@@ -34,6 +35,10 @@ export default class MissionctrlBrokerUpdate extends ScCommand<typeof Missionctr
     'new-name': Flags.string({
       description: 'New name of the event broker service. The new service name must be unique within an organization.',
     }),
+    org: Flags.string({
+      char: 'o',
+      description: 'Organization ID or alias to use. If not specified, uses the default organization.',
+    }),
   }
 
   public async run(): Promise<EventBrokerOperationApiResponse> {
@@ -51,7 +56,7 @@ export default class MissionctrlBrokerUpdate extends ScCommand<typeof Missionctr
       ...(newName && {name: newName}),
     }
 
-    const conn = new ScConnection()
+    const conn = await resolveOrgConnection(this, flags.org)
 
     // API url
     let apiUrl = `/missionControl/eventBrokerServices`

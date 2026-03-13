@@ -1,13 +1,15 @@
-import {printObjectAsKeyValueTable, ScConnection} from '@dishantlangayan/sc-cli-core'
+import {OrgManager, printObjectAsKeyValueTable, ScConnection} from '@dishantlangayan/sc-cli-core'
 import {runCommand} from '@oclif/test'
 import {expect} from 'chai'
 import * as sinon from 'sinon'
 
+import PlatformEnvUpdate from '../../../../src/commands/platform/env/update.js'
 import {EnvironmentApiResponse, EnvironmentListApiResponse} from '../../../../src/types/environment'
-import {anEnv, setEnvVariables} from '../../../util/test-utils'
+import {anEnv} from '../../../util/test-utils'
 
 describe('platform:env:update', () => {
-  setEnvVariables()
+  let orgManagerStub: sinon.SinonStubbedInstance<OrgManager>
+  let getOrgManagerStub: sinon.SinonStub
   let scConnUpdateStub: sinon.SinonStub
   let scConnGetStub: sinon.SinonStub
   const envName: string = 'MyTestEnvironment'
@@ -15,11 +17,30 @@ describe('platform:env:update', () => {
   const envDescription: string = 'This is an environment description.'
 
   beforeEach(() => {
+    // Stub OrgManager
+    orgManagerStub = sinon.createStubInstance(OrgManager)
+    getOrgManagerStub = sinon.stub(
+      PlatformEnvUpdate.prototype as unknown as Record<string, unknown>,
+      'getOrgManager',
+    ).resolves(orgManagerStub)
+
+    // Set up default org behavior
+    orgManagerStub.getDefaultOrg.resolves({
+      accessToken: 'test-token',
+      orgId: 'default-org',
+    })
+
+    // Stub createConnection
+    const mockConnection = new ScConnection('https://api.solace.cloud', 'test-token')
+    orgManagerStub.createConnection.resolves(mockConnection)
+
+    // Stub ScConnection methods
     scConnUpdateStub = sinon.stub(ScConnection.prototype, 'put')
     scConnGetStub = sinon.stub(ScConnection.prototype, 'get')
   })
 
   afterEach(() => {
+    getOrgManagerStub.restore()
     scConnUpdateStub.restore()
     scConnGetStub.restore()
   })
@@ -57,6 +78,8 @@ describe('platform:env:update', () => {
     const {stdout} = await runCommand(`platform:env:update --name=${envName} --new-name=${envNewName}`)
 
     // Assert
+    expect(orgManagerStub.getDefaultOrg.calledOnce).to.be.true
+    expect(orgManagerStub.createConnection.calledWith('default-org')).to.be.true
     expect(scConnGetStub.getCall(0).args[0]).to.contain(`?name=${envName}`)
     expect(scConnUpdateStub.getCall(0).calledWith(`/platform/environments/id${envName}`, expectBody)).to.be.true
     expect(stdout).to.contain(printObjectAsKeyValueTable(expectResponse.data as unknown as Record<string, unknown>))

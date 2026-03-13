@@ -1,6 +1,7 @@
-import {ScCommand, ScConnection} from '@dishantlangayan/sc-cli-core'
+import {ScCommand} from '@dishantlangayan/sc-cli-core'
 import {Flags} from '@oclif/core'
 
+import {resolveOrgConnection} from '../../../lib/org-utils.js'
 import {EnvironmentListApiResponse} from '../../../types/environment.js'
 
 export default class PlatformEnvDelete extends ScCommand<typeof PlatformEnvDelete> {
@@ -11,6 +12,7 @@ export default class PlatformEnvDelete extends ScCommand<typeof PlatformEnvDelet
   static override examples = [
     '<%= config.bin %> <%= command.id %> --name=MyEnvName',
     '<%= config.bin %> <%= command.id %> --env-id=MyEnvId',
+    '<%= config.bin %> <%= command.id %> --org=my-org --name=MyEnvName',
   ]
   static override flags = {
     'env-id': Flags.string({
@@ -23,6 +25,10 @@ export default class PlatformEnvDelete extends ScCommand<typeof PlatformEnvDelet
       description: 'Name of the environment.',
       exactlyOne: ['env-id', 'name'],
     }),
+    org: Flags.string({
+      char: 'o',
+      description: 'Organization ID or alias to use. If not specified, uses the default organization.',
+    }),
   }
 
   public async run(): Promise<{message: string}> {
@@ -31,7 +37,7 @@ export default class PlatformEnvDelete extends ScCommand<typeof PlatformEnvDelet
     const name = flags.name ?? ''
     const envId = flags['env-id'] ?? ''
 
-    const conn = new ScConnection()
+    const conn = await resolveOrgConnection(this, flags.org)
 
     // API url
     let apiUrl: string = `/platform/environments`

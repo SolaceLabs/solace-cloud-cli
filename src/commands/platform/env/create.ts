@@ -1,6 +1,7 @@
-import {printObjectAsKeyValueTable, ScCommand, ScConnection} from '@dishantlangayan/sc-cli-core'
+import {printObjectAsKeyValueTable, ScCommand} from '@dishantlangayan/sc-cli-core'
 import {Flags} from '@oclif/core'
 
+import {resolveOrgConnection} from '../../../lib/org-utils.js'
 import {EnvironmentApiResponse} from '../../../types/environment.js'
 
 export default class PlatformEnvCreate extends ScCommand<typeof PlatformEnvCreate> {
@@ -9,7 +10,8 @@ export default class PlatformEnvCreate extends ScCommand<typeof PlatformEnvCreat
 
   Token Permissions: [ environments:edit ]`
   static override examples = [
-    '<%= config.bin %> <%= command.id %> --name=MyEnvironment --description="My environment description" --isDefault --isProduction',
+    '<%= config.bin %> <%= command.id %> --name=MyEnvironment',
+    '<%= config.bin %> <%= command.id %> --org=my-org --name=MyEnvironment --description="My environment description" --isDefault --isProduction',
   ]
   static override flags = {
     description: Flags.string({
@@ -30,6 +32,10 @@ export default class PlatformEnvCreate extends ScCommand<typeof PlatformEnvCreat
       description: 'Name of the environment to create.',
       required: true,
     }),
+    org: Flags.string({
+      char: 'o',
+      description: 'Organization ID or alias to use. If not specified, uses the default organization.',
+    }),
   }
 
   public async run(): Promise<EnvironmentApiResponse> {
@@ -40,7 +46,7 @@ export default class PlatformEnvCreate extends ScCommand<typeof PlatformEnvCreat
     const isDefault = flags.isDefault ?? false
     const isProduction = flags.isProduction ?? false
 
-    const conn = new ScConnection()
+    const conn = await resolveOrgConnection(this, flags.org)
 
     // API url
     const apiUrl: string = `/platform/environments`

@@ -1,22 +1,43 @@
-import {printObjectAsKeyValueTable, ScConnection} from '@dishantlangayan/sc-cli-core'
+import {OrgManager, printObjectAsKeyValueTable, ScConnection} from '@dishantlangayan/sc-cli-core'
 import {runCommand} from '@oclif/test'
 import {expect} from 'chai'
 import * as sinon from 'sinon'
 
+import MissionctrlBrokerState from '../../../../src/commands/missionctrl/broker/state.js'
 import {EventBrokerListApiResponse, EventBrokerRedundancyApiResponse} from '../../../../src/types/broker.js'
-import {aBroker, setEnvVariables} from '../../../util/test-utils.js'
+import {aBroker} from '../../../util/test-utils.js'
 
 describe('missionctrl:broker:state', () => {
-  setEnvVariables()
   const brokerName: string = 'MyTestBrokerName'
   const brokerId: string = 'MyTestBrokerId'
+  let orgManagerStub: sinon.SinonStubbedInstance<OrgManager>
+  let getOrgManagerStub: sinon.SinonStub
   let scConnStub: sinon.SinonStub
 
   beforeEach(() => {
+    // Stub OrgManager
+    orgManagerStub = sinon.createStubInstance(OrgManager)
+    getOrgManagerStub = sinon.stub(
+      MissionctrlBrokerState.prototype as unknown as Record<string, unknown>,
+      'getOrgManager',
+    ).resolves(orgManagerStub)
+
+    // Set up default org behavior
+    orgManagerStub.getDefaultOrg.resolves({
+      accessToken: 'test-token',
+      orgId: 'default-org',
+    })
+
+    // Stub createConnection
+    const mockConnection = new ScConnection('https://api.solace.cloud', 'test-token')
+    orgManagerStub.createConnection.resolves(mockConnection)
+
+    // Stub ScConnection methods
     scConnStub = sinon.stub(ScConnection.prototype, 'get')
   })
 
   afterEach(() => {
+    getOrgManagerStub.restore()
     scConnStub.restore()
   })
 
@@ -40,6 +61,8 @@ describe('missionctrl:broker:state', () => {
     const {stdout} = await runCommand(`missionctrl:broker:state --broker-id ${brokerId}`)
 
     // Assert
+    expect(orgManagerStub.getDefaultOrg.calledOnce).to.be.true
+    expect(orgManagerStub.createConnection.calledWith('default-org')).to.be.true
     expect(scConnStub.getCall(0).calledWith(`/missionControl/eventBrokerServices/${brokerId}/brokerState`)).to.be.true
     expect(stdout).to.contain(printObjectAsKeyValueTable(expectBrokerStateResponse.data))
   })

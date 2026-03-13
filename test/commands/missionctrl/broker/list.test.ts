@@ -1,23 +1,44 @@
-import {renderTable, ScConnection} from '@dishantlangayan/sc-cli-core'
+import {OrgManager, renderTable, ScConnection} from '@dishantlangayan/sc-cli-core'
 import {runCommand} from '@oclif/test'
 import {expect} from 'chai'
 import * as sinon from 'sinon'
 
+import MissionctrlBrokerList from '../../../../src/commands/missionctrl/broker/list.js'
 import {EventBrokerListApiResponse, EventBrokerServiceDetail} from '../../../../src/types/broker.js'
-import {aBroker, setEnvVariables} from '../../../util/test-utils.js'
+import {aBroker} from '../../../util/test-utils.js'
 
 describe('missionctrl:broker:list', () => {
-  setEnvVariables()
+  let orgManagerStub: sinon.SinonStubbedInstance<OrgManager>
+  let getOrgManagerStub: sinon.SinonStub
   let scConnStub: sinon.SinonStub
 
   const defaultPageSize = 10
   const defaultPageNumber = 1
 
   beforeEach(() => {
+    // Stub OrgManager
+    orgManagerStub = sinon.createStubInstance(OrgManager)
+    getOrgManagerStub = sinon.stub(
+      MissionctrlBrokerList.prototype as unknown as Record<string, unknown>,
+      'getOrgManager',
+    ).resolves(orgManagerStub)
+
+    // Set up default org behavior
+    orgManagerStub.getDefaultOrg.resolves({
+      accessToken: 'test-token',
+      orgId: 'default-org',
+    })
+
+    // Stub createConnection
+    const mockConnection = new ScConnection('https://api.solace.cloud', 'test-token')
+    orgManagerStub.createConnection.resolves(mockConnection)
+
+    // Stub ScConnection methods
     scConnStub = sinon.stub(ScConnection.prototype, 'get')
   })
 
   afterEach(() => {
+    getOrgManagerStub.restore()
     scConnStub.restore()
   })
 
@@ -55,11 +76,9 @@ describe('missionctrl:broker:list', () => {
     const {stdout} = await runCommand('missionctrl:broker:list')
 
     // Assert
-    expect(
-      scConnStub
-        .getCall(0)
-        .calledWith(`/missionControl/eventBrokerServices?pageSize=${defaultPageSize}&pageNumber=${defaultPageNumber}`),
-    ).to.be.true
+    expect(orgManagerStub.getDefaultOrg.calledOnce).to.be.true
+    expect(orgManagerStub.createConnection.calledWith('default-org')).to.be.true
+    expect(scConnStub.getCall(0).calledWith(`/missionControl/eventBrokerServices?pageSize=${defaultPageSize}&pageNumber=${defaultPageNumber}`)).to.be.true
     expect(stdout).to.contain(renderTable(expectBrokerArray))
   })
 
@@ -73,8 +92,8 @@ describe('missionctrl:broker:list', () => {
         pagination: {
           count: 1,
           nextPage: null,
-          pageNumber,
-          pageSize,
+          pageNumber: 2,
+          pageSize: 1,
           totalPages: 3,
         },
       },

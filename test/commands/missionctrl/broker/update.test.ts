@@ -1,25 +1,46 @@
-import {printObjectAsKeyValueTable, ScConnection} from '@dishantlangayan/sc-cli-core'
+import {OrgManager, printObjectAsKeyValueTable, ScConnection} from '@dishantlangayan/sc-cli-core'
 import {runCommand} from '@oclif/test'
 import {expect} from 'chai'
 import * as sinon from 'sinon'
 
+import MissionctrlBrokerUpdate from '../../../../src/commands/missionctrl/broker/update.js'
 import {EventBrokerListApiResponse, EventBrokerOperationApiResponse} from '../../../../src/types/broker.js'
-import {aBroker, createTestOperationResponse, setEnvVariables} from '../../../util/test-utils.js'
+import {aBroker, createTestOperationResponse} from '../../../util/test-utils.js'
 
 describe('missionctrl:broker:update', () => {
-  setEnvVariables()
   const brokerName: string = 'MyTestBrokerName'
   const newBrokerName: string = 'MyNewTestBrokerName'
   const brokerId: string = 'MyTestBrokerId'
+  let orgManagerStub: sinon.SinonStubbedInstance<OrgManager>
+  let getOrgManagerStub: sinon.SinonStub
   let scGetConnStub: sinon.SinonStub
   let scPatchConnStub: sinon.SinonStub
 
   beforeEach(() => {
+    // Stub OrgManager
+    orgManagerStub = sinon.createStubInstance(OrgManager)
+    getOrgManagerStub = sinon.stub(
+      MissionctrlBrokerUpdate.prototype as unknown as Record<string, unknown>,
+      'getOrgManager',
+    ).resolves(orgManagerStub)
+
+    // Set up default org behavior
+    orgManagerStub.getDefaultOrg.resolves({
+      accessToken: 'test-token',
+      orgId: 'default-org',
+    })
+
+    // Stub createConnection
+    const mockConnection = new ScConnection('https://api.solace.cloud', 'test-token')
+    orgManagerStub.createConnection.resolves(mockConnection)
+
+    // Stub ScConnection methods
     scGetConnStub = sinon.stub(ScConnection.prototype, 'get')
     scPatchConnStub = sinon.stub(ScConnection.prototype, 'patch')
   })
 
   afterEach(() => {
+    getOrgManagerStub.restore()
     scGetConnStub.restore()
     scPatchConnStub.restore()
   })
@@ -46,6 +67,8 @@ describe('missionctrl:broker:update', () => {
     const {stdout} = await runCommand(`missionctrl:broker:update -b ${brokerId} -l true`)
 
     // Assert
+    expect(orgManagerStub.getDefaultOrg.calledOnce).to.be.true
+    expect(orgManagerStub.createConnection.calledWith('default-org')).to.be.true
     expect(scPatchConnStub.getCall(0).calledWith(`/missionControl/eventBrokerServices/${brokerId}`, expectBody)).to.be
       .true
     expect(stdout).to.contain(

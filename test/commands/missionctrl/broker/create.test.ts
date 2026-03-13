@@ -1,13 +1,15 @@
-import {printObjectAsKeyValueTable, ScConnection} from '@dishantlangayan/sc-cli-core'
+import {OrgManager, printObjectAsKeyValueTable, ScConnection} from '@dishantlangayan/sc-cli-core'
 import {runCommand} from '@oclif/test'
 import {expect} from 'chai'
 import * as sinon from 'sinon'
 
+import MissionctrlBrokerCreate from '../../../../src/commands/missionctrl/broker/create.js'
 import {EventBrokerOperationApiResponse} from '../../../../src/types/broker.js'
-import {aBroker, anEnv, setEnvVariables} from '../../../util/test-utils'
+import {aBroker, anEnv} from '../../../util/test-utils'
 
 describe('missionctrl:broker:create', () => {
-  setEnvVariables()
+  let orgManagerStub: sinon.SinonStubbedInstance<OrgManager>
+  let getOrgManagerStub: sinon.SinonStub
   let scConnPostStub: sinon.SinonStub
   let scConnGetStub: sinon.SinonStub
   const envName: string = 'MyTestEnvironment'
@@ -16,11 +18,30 @@ describe('missionctrl:broker:create', () => {
   const brokerSvcClassId: string = 'DEVELOPER'
 
   beforeEach(() => {
+    // Stub OrgManager
+    orgManagerStub = sinon.createStubInstance(OrgManager)
+    getOrgManagerStub = sinon.stub(
+      MissionctrlBrokerCreate.prototype as unknown as Record<string, unknown>,
+      'getOrgManager',
+    ).resolves(orgManagerStub)
+
+    // Set up default org behavior
+    orgManagerStub.getDefaultOrg.resolves({
+      accessToken: 'test-token',
+      orgId: 'default-org',
+    })
+
+    // Stub createConnection
+    const mockConnection = new ScConnection('https://api.solace.cloud', 'test-token')
+    orgManagerStub.createConnection.resolves(mockConnection)
+
+    // Stub ScConnection methods
     scConnPostStub = sinon.stub(ScConnection.prototype, 'post')
     scConnGetStub = sinon.stub(ScConnection.prototype, 'get')
   })
 
   afterEach(() => {
+    getOrgManagerStub.restore()
     scConnPostStub.restore()
     scConnGetStub.restore()
   })
@@ -52,6 +73,8 @@ describe('missionctrl:broker:create', () => {
     )
 
     // Assert
+    expect(orgManagerStub.getDefaultOrg.calledOnce).to.be.true
+    expect(orgManagerStub.createConnection.calledWith('default-org')).to.be.true
     expect(scConnPostStub.getCall(0).calledWith('/missionControl/eventBrokerServices', expectBody)).to.be.true
     expect(stdout).to.contain(printObjectAsKeyValueTable(expectResponse.data as unknown as Record<string, unknown>))
   })
@@ -87,21 +110,10 @@ describe('missionctrl:broker:create', () => {
 
   it(`runs missionctrl:broker:create -e ${envName} -n ${brokerName} -d ${brokerDC} -c ${brokerSvcClassId}`, async () => {
     // Arrange
-    const envs = {
-      data: [anEnv(envName, false, false)],
-      meta: {
-        pagination: {
-          count: 1,
-          nextPage: null,
-          pageNumber: 1,
-          pageSize: 10,
-          totalPages: 1,
-        },
-      },
-    }
+    const envId = `id${envName}`
     const expectBody = {
       datacenterId: brokerDC,
-      environmentId: envs.data[0].id,
+      environmentId: envId,
       locked: false,
       name: brokerName,
       redundancyGroupSslEnabled: false,
@@ -112,7 +124,12 @@ describe('missionctrl:broker:create', () => {
       meta: {},
     }
 
-    scConnGetStub.returns(Promise.resolve(envs))
+    const expectEnvResponse = {
+      data: [anEnv(envName, true, false)],
+      meta: {},
+    }
+
+    scConnGetStub.returns(Promise.resolve(expectEnvResponse))
     scConnPostStub.returns(expectResponse)
 
     // Act

@@ -1,6 +1,7 @@
-import {printObjectAsKeyValueTable, ScCommand, ScConnection} from '@dishantlangayan/sc-cli-core'
+import {printObjectAsKeyValueTable, ScCommand} from '@dishantlangayan/sc-cli-core'
 import {Flags} from '@oclif/core'
 
+import {resolveOrgConnection} from '../../../lib/org-utils.js'
 import {EnvironmentApiResponse, EnvironmentListApiResponse} from '../../../types/environment.js'
 
 export default class PlatformEnvUpdate extends ScCommand<typeof PlatformEnvUpdate> {
@@ -12,8 +13,9 @@ export default class PlatformEnvUpdate extends ScCommand<typeof PlatformEnvUpdat
   Token Permissions: [ environments:edit ]
   `
   static override examples = [
-    '<%= config.bin %> <%= command.id %> --name=MyEnvName --new-name=MyNewEnvName --description="My description to update" --isDefault',
+    '<%= config.bin %> <%= command.id %> --name=MyEnvName --new-name=MyNewEnvName',
     '<%= config.bin %> <%= command.id %> --env-id=MyEnvId --new-name=MyNewEnvName --description="My description to update" --isDefault',
+    '<%= config.bin %> <%= command.id %> --org=my-org --name=MyEnvName --isDefault',
   ]
   static override flags = {
     description: Flags.string({
@@ -36,6 +38,10 @@ export default class PlatformEnvUpdate extends ScCommand<typeof PlatformEnvUpdat
     'new-name': Flags.string({
       description: 'New name of the environment.',
     }),
+    org: Flags.string({
+      char: 'o',
+      description: 'Organization ID or alias to use. If not specified, uses the default organization.',
+    }),
   }
 
   public async run(): Promise<EnvironmentApiResponse> {
@@ -53,7 +59,7 @@ export default class PlatformEnvUpdate extends ScCommand<typeof PlatformEnvUpdat
       ...(newName && {name: newName}),
     }
 
-    const conn = new ScConnection()
+    const conn = await resolveOrgConnection(this, flags.org)
 
     // API url
     let apiUrl: string = `/platform/environments`

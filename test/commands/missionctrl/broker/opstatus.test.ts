@@ -1,8 +1,9 @@
-import {renderTable, ScConnection} from '@dishantlangayan/sc-cli-core'
+import {OrgManager, renderTable, ScConnection} from '@dishantlangayan/sc-cli-core'
 import {runCommand} from '@oclif/test'
 import {expect} from 'chai'
 import * as sinon from 'sinon'
 
+import MissionctrlBrokerOpstatus from '../../../../src/commands/missionctrl/broker/opstatus.js'
 import {
   EventBrokerAllOperationsApiResponse,
   EventBrokerOperationApiResponse,
@@ -11,21 +12,40 @@ import {
 import {
   createProgressLogsWithStatus,
   createTestAllOperationsResponse,
-  setEnvVariables,
 } from '../../../util/test-utils.js'
 
 describe('missionctrl:broker:opstatus', () => {
-  setEnvVariables()
   const brokerName: string = 'MyTestBrokerName'
   const brokerId: string = 'MyTestBrokerId'
   const operationId: string = 'MyOperationId'
+  let orgManagerStub: sinon.SinonStubbedInstance<OrgManager>
+  let getOrgManagerStub: sinon.SinonStub
   let scConnStub: sinon.SinonStub
 
   beforeEach(() => {
+    // Stub OrgManager
+    orgManagerStub = sinon.createStubInstance(OrgManager)
+    getOrgManagerStub = sinon.stub(
+      MissionctrlBrokerOpstatus.prototype as unknown as Record<string, unknown>,
+      'getOrgManager',
+    ).resolves(orgManagerStub)
+
+    // Set up default org behavior
+    orgManagerStub.getDefaultOrg.resolves({
+      accessToken: 'test-token',
+      orgId: 'default-org',
+    })
+
+    // Stub createConnection
+    const mockConnection = new ScConnection('https://api.solace.cloud', 'test-token')
+    orgManagerStub.createConnection.resolves(mockConnection)
+
+    // Stub ScConnection methods
     scConnStub = sinon.stub(ScConnection.prototype, 'get')
   })
 
   afterEach(() => {
+    getOrgManagerStub.restore()
     scConnStub.restore()
   })
 
@@ -54,6 +74,8 @@ describe('missionctrl:broker:opstatus', () => {
     const {stdout} = await runCommand(`missionctrl:broker:opstatus -b ${brokerId}`)
 
     // Assert
+    expect(orgManagerStub.getDefaultOrg.calledOnce).to.be.true
+    expect(orgManagerStub.createConnection.calledWith('default-org')).to.be.true
     expect(stdout).to.contain(renderTable(opStatusArray))
   })
 

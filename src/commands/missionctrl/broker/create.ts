@@ -1,6 +1,7 @@
-import {printObjectAsKeyValueTable, ScCommand, ScConnection} from '@dishantlangayan/sc-cli-core'
+import {printObjectAsKeyValueTable, ScCommand} from '@dishantlangayan/sc-cli-core'
 import {Flags} from '@oclif/core'
 
+import {resolveOrgConnection} from '../../../lib/org-utils.js'
 import {EventBrokerOperationApiResponse} from '../../../types/broker.js'
 
 export default class MissionctrlBrokerCreate extends ScCommand<typeof MissionctrlBrokerCreate> {
@@ -12,6 +13,7 @@ Your token must have one of the permissions listed in the Token Permissions.
 Token Permissions: [ \`services:post\` ]`
   static override examples = [
     '<%= config.bin %> <%= command.id %> --name=MyBrokerName --datacenter-id=eks-ca-central-1a --service-class-id=DEVELOPER',
+    '<%= config.bin %> <%= command.id %> --org=my-org --name=MyBrokerName --datacenter-id=eks-ca-central-1a --service-class-id=DEVELOPER',
   ]
   static override flags = {
     'datacenter-id': Flags.string({
@@ -46,6 +48,10 @@ Token Permissions: [ \`services:post\` ]`
       description: 'Name of the event broker service to create.',
       required: true,
     }),
+    org: Flags.string({
+      char: 'o',
+      description: 'Organization ID or alias to use. If not specified, uses the default organization.',
+    }),
     'redundancy-group-ssl-enabled': Flags.boolean({
       char: 'r',
       default: false,
@@ -77,7 +83,7 @@ Token Permissions: [ \`services:post\` ]`
     const eventBrokerVersion = flags.version ?? ''
     let envId: string = ''
 
-    const conn = new ScConnection()
+    const conn = await resolveOrgConnection(this, flags.org)
 
     // API url
     const apiUrl: string = `/missionControl/eventBrokerServices`

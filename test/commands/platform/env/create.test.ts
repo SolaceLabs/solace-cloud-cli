@@ -1,21 +1,42 @@
-import {printObjectAsKeyValueTable, ScConnection} from '@dishantlangayan/sc-cli-core'
+import {OrgManager, printObjectAsKeyValueTable, ScConnection} from '@dishantlangayan/sc-cli-core'
 import {runCommand} from '@oclif/test'
 import {expect} from 'chai'
 import * as sinon from 'sinon'
 
+import PlatformEnvCreate from '../../../../src/commands/platform/env/create.js'
 import {Environment, EnvironmentApiResponse} from '../../../../src/types/environment.js'
-import {anEnv, setEnvVariables} from '../../../util/test-utils'
+import {anEnv} from '../../../util/test-utils'
 
 describe('platform:env:create', () => {
-  setEnvVariables()
+  let orgManagerStub: sinon.SinonStubbedInstance<OrgManager>
+  let getOrgManagerStub: sinon.SinonStub
   let scConnStub: sinon.SinonStub
   const envName: string = 'MyTestEnvironment'
 
   beforeEach(() => {
+    // Stub OrgManager
+    orgManagerStub = sinon.createStubInstance(OrgManager)
+    getOrgManagerStub = sinon.stub(
+      PlatformEnvCreate.prototype as unknown as Record<string, unknown>,
+      'getOrgManager',
+    ).resolves(orgManagerStub)
+
+    // Set up default org behavior
+    orgManagerStub.getDefaultOrg.resolves({
+      accessToken: 'test-token',
+      orgId: 'default-org',
+    })
+
+    // Stub createConnection
+    const mockConnection = new ScConnection('https://api.solace.cloud', 'test-token')
+    orgManagerStub.createConnection.resolves(mockConnection)
+
+    // Stub ScConnection methods
     scConnStub = sinon.stub(ScConnection.prototype, 'post')
   })
 
   afterEach(() => {
+    getOrgManagerStub.restore()
     scConnStub.restore()
   })
 
@@ -41,6 +62,8 @@ describe('platform:env:create', () => {
     const {stdout} = await runCommand(`platform:env:create --name=${envName}`)
 
     // Assert
+    expect(orgManagerStub.getDefaultOrg.calledOnce).to.be.true
+    expect(orgManagerStub.createConnection.calledWith('default-org')).to.be.true
     expect(scConnStub.getCall(0).calledWith('/platform/environments', expectBody)).to.be.true
     expect(stdout).to.contain(printObjectAsKeyValueTable(expectResponse.data as unknown as Record<string, unknown>))
   })

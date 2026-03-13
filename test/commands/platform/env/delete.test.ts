@@ -1,22 +1,43 @@
-import {ScConnection} from '@dishantlangayan/sc-cli-core'
+import {OrgManager, ScConnection} from '@dishantlangayan/sc-cli-core'
 import {runCommand} from '@oclif/test'
 import {expect} from 'chai'
 import * as sinon from 'sinon'
 
-import {anEnv, setEnvVariables} from '../../../util/test-utils'
+import PlatformEnvDelete from '../../../../src/commands/platform/env/delete.js'
+import {anEnv} from '../../../util/test-utils'
 
 describe('platform:env:delete', () => {
-  setEnvVariables()
+  let orgManagerStub: sinon.SinonStubbedInstance<OrgManager>
+  let getOrgManagerStub: sinon.SinonStub
   let scConnDeleteStub: sinon.SinonStub
   let scConnGetStub: sinon.SinonStub
   const envName: string = 'MyTestEnvironment'
 
   beforeEach(() => {
+    // Stub OrgManager
+    orgManagerStub = sinon.createStubInstance(OrgManager)
+    getOrgManagerStub = sinon.stub(
+      PlatformEnvDelete.prototype as unknown as Record<string, unknown>,
+      'getOrgManager',
+    ).resolves(orgManagerStub)
+
+    // Set up default org behavior
+    orgManagerStub.getDefaultOrg.resolves({
+      accessToken: 'test-token',
+      orgId: 'default-org',
+    })
+
+    // Stub createConnection
+    const mockConnection = new ScConnection('https://api.solace.cloud', 'test-token')
+    orgManagerStub.createConnection.resolves(mockConnection)
+
+    // Stub ScConnection methods
     scConnDeleteStub = sinon.stub(ScConnection.prototype, 'delete')
     scConnGetStub = sinon.stub(ScConnection.prototype, 'get')
   })
 
   afterEach(() => {
+    getOrgManagerStub.restore()
     scConnDeleteStub.restore()
     scConnGetStub.restore()
   })
@@ -49,6 +70,8 @@ describe('platform:env:delete', () => {
     const {stdout} = await runCommand(`platform:env:delete --name ${envName}`)
 
     // Assert
+    expect(orgManagerStub.getDefaultOrg.calledOnce).to.be.true
+    expect(orgManagerStub.createConnection.calledWith('default-org')).to.be.true
     expect(scConnGetStub.getCall(0).args[0]).to.contain(`?name=${envName}`)
     expect(scConnDeleteStub.getCall(0).calledWith(`/platform/environments/id${envName}`)).to.be.true
     expect(stdout).to.contain(deleteSuccessMsg)

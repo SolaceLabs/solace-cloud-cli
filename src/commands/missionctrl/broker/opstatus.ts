@@ -2,11 +2,13 @@ import {renderTable, ScCommand, ScConnection, sleep} from '@dishantlangayan/sc-c
 import {Flags} from '@oclif/core'
 import {MultiBar, Presets, SingleBar} from 'cli-progress'
 
+import {resolveOrgConnection} from '../../../lib/org-utils.js'
 import {
   EventBrokerAllOperationsApiResponse,
   EventBrokerListApiResponse,
   EventBrokerOperationApiResponse,
   EventBrokerOperationDetail,
+  ProgressLog,
 } from '../../../types/broker.js'
 
 export default class MissionctrlBrokerOpstatus extends ScCommand<typeof MissionctrlBrokerOpstatus> {
@@ -18,6 +20,7 @@ export default class MissionctrlBrokerOpstatus extends ScCommand<typeof Missionc
   static override examples = [
     '<%= config.bin %> <%= command.id %> -b <broker-id>',
     '<%= config.bin %> <%= command.id %> -n <broker-name>',
+    '<%= config.bin %> <%= command.id %> --org=my-org -b <broker-id>',
   ]
   static override flags = {
     'broker-id': Flags.string({
@@ -29,6 +32,10 @@ export default class MissionctrlBrokerOpstatus extends ScCommand<typeof Missionc
       char: 'n',
       description: 'Name of the event broker service.',
       exactlyOne: ['broker-id', 'name'],
+    }),
+    org: Flags.string({
+      char: 'o',
+      description: 'Organization ID or alias to use. If not specified, uses the default organization.',
     }),
     'show-progress': Flags.boolean({
       char: 'p',
@@ -50,7 +57,7 @@ export default class MissionctrlBrokerOpstatus extends ScCommand<typeof Missionc
     const showProgress = flags['show-progress'] ?? false
     const waitMs = flags['wait-ms'] ?? 5000
 
-    const conn = new ScConnection()
+    const conn = await resolveOrgConnection(this, flags.org)
 
     // Base API url
     let apiUrl: string = `/missionControl/eventBrokerServices`
@@ -119,7 +126,7 @@ export default class MissionctrlBrokerOpstatus extends ScCommand<typeof Missionc
           // start a new progress bar for the operation with a total value of size of the steps
           const progressBar = multiProgressBar.create(numSteps, 0, {operationType: operationData.operationType})
           // Update the progress with the steps completed
-          const completedNumSteps = opStatusResp.data.progressLogs.filter((log) => log.status === 'success').length
+          const completedNumSteps = opStatusResp.data.progressLogs.filter((log: ProgressLog) => log.status === 'success').length
           progressBar.update(completedNumSteps)
           if (
             completedNumSteps === numSteps ||
@@ -170,7 +177,7 @@ export default class MissionctrlBrokerOpstatus extends ScCommand<typeof Missionc
       const opStatusResp = await conn.get<EventBrokerOperationApiResponse>(opStatusApiUrl)
       if (opStatusResp.data.progressLogs) {
         const numSteps = opStatusResp.data.progressLogs.length
-        const completedNumSteps = opStatusResp.data.progressLogs.filter((log) => log.status === 'success').length
+        const completedNumSteps = opStatusResp.data.progressLogs.filter((log: ProgressLog) => log.status === 'success').length
         // Update progress bar
         progressBar.setTotal(numSteps)
         progressBar.update(completedNumSteps)

@@ -1,6 +1,7 @@
-import {printObjectAsKeyValueTable, ScCommand, ScConnection} from '@dishantlangayan/sc-cli-core'
+import {printObjectAsKeyValueTable, ScCommand} from '@dishantlangayan/sc-cli-core'
 import {Flags} from '@oclif/core'
 
+import {resolveOrgConnection} from '../../../lib/org-utils.js'
 import {EnvironmentApiResponse, EnvironmentListApiResponse} from '../../../types/environment.js'
 
 export default class PlatformEnvDisplay extends ScCommand<typeof PlatformEnvDisplay> {
@@ -13,6 +14,7 @@ export default class PlatformEnvDisplay extends ScCommand<typeof PlatformEnvDisp
   static override examples = [
     '<%= config.bin %> <%= command.id %> --name=MyEnvName',
     '<%= config.bin %> <%= command.id %> --env-id=MyEnvId',
+    '<%= config.bin %> <%= command.id %> --org=my-org --env-id=MyEnvId',
   ]
   static override flags = {
     'env-id': Flags.string({
@@ -25,6 +27,10 @@ export default class PlatformEnvDisplay extends ScCommand<typeof PlatformEnvDisp
       description: 'Name of the environment.',
       exactlyOne: ['env-id', 'name'],
     }),
+    org: Flags.string({
+      char: 'o',
+      description: 'Organization ID or alias to use. If not specified, uses the default organization.',
+    }),
   }
 
   public async run(): Promise<EnvironmentApiResponse | EnvironmentListApiResponse> {
@@ -33,7 +39,7 @@ export default class PlatformEnvDisplay extends ScCommand<typeof PlatformEnvDisp
     const name = flags.name ?? ''
     const envId = flags['env-id'] ?? ''
 
-    const conn = new ScConnection()
+    const conn = await resolveOrgConnection(this, flags.org)
 
     // API url
     // If env name provided, get all environments matching provided name
