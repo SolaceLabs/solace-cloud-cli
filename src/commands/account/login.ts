@@ -3,6 +3,8 @@ import {Flags} from '@oclif/core'
 import * as process from 'node:process'
 import * as readline from 'node:readline'
 
+const DEFAULT_BASE_URL = 'https://api.solace.cloud'
+
 export default class AccountLogin extends ScCommand<typeof AccountLogin> {
   static override args = {}
   static override description = `Login to a Solace Cloud organization.
@@ -91,7 +93,7 @@ Required token permissions: Varies by operations you intend to perform`
         accessToken,
         alias: flags.alias,
         apiVersion: flags['api-version'],
-        baseUrl: flags['base-url'],
+        baseUrl: flags['base-url'] ?? DEFAULT_BASE_URL,
         orgId: flags.org,
       }
 
