@@ -22,13 +22,6 @@ Displays organizations you have logged into, including their aliases and which o
       return {data: []}
     }
 
-    // Get the default organization
-    const defaultOrg = await orgManager.getDefaultOrg()
-    const defaultOrgId = defaultOrg?.orgId
-
-    // Helper function to determine if org is default
-    const isDefault = (orgId: string) => orgId === defaultOrgId ? 'Yes' : 'No'
-
     // Create table array (first row is headers, rest are data rows)
     const orgArray = [
       ['Org ID', 'Alias', 'Base URL', 'API Version', 'Is Default'],
@@ -37,7 +30,7 @@ Displays organizations you have logged into, including their aliases and which o
         org.alias ?? '',
         org.baseUrl,
         org.apiVersion ?? '',
-        isDefault(org.orgId),
+        org.isDefault ? 'Yes' : '',
       ]),
     ]
 
