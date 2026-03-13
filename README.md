@@ -40,7 +40,7 @@ $ npm install -g @dishantlangayan/solace-cloud-cli
 $ sc COMMAND
 running command...
 $ sc (--version)
-@dishantlangayan/solace-cloud-cli/0.2.1 linux-x64 node-v22.22.0
+@dishantlangayan/solace-cloud-cli/0.3.0 darwin-arm64 node-v24.1.0
 $ sc --help [COMMAND]
 USAGE
   $ sc COMMAND
@@ -87,9 +87,10 @@ See the [LICENSE](LICENSE) file for details.
 <!-- licensestop -->
 # Commands
 <!-- commands -->
+* [`sc account list`](#sc-account-list)
+* [`sc account login`](#sc-account-login)
+* [`sc account logout`](#sc-account-logout)
 * [`sc autocomplete [SHELL]`](#sc-autocomplete-shell)
-* [`sc broker queue create`](#sc-broker-queue-create)
-* [`sc broker queue list`](#sc-broker-queue-list)
 * [`sc commands`](#sc-commands)
 * [`sc help [COMMAND]`](#sc-help-command)
 * [`sc missionctrl broker create`](#sc-missionctrl-broker-create)
@@ -118,6 +119,118 @@ See the [LICENSE](LICENSE) file for details.
 * [`sc update [CHANNEL]`](#sc-update-channel)
 * [`sc version`](#sc-version)
 * [`sc which`](#sc-which)
+
+## `sc account list`
+
+List all authenticated organizations.
+
+```
+USAGE
+  $ sc account list [--json] [--log-level debug|warn|error|info|trace]
+
+GLOBAL FLAGS
+  --json                Format output as json.
+  --log-level=<option>  [default: info] Specify level for logging.
+                        <options: debug|warn|error|info|trace>
+
+DESCRIPTION
+  List all authenticated organizations.
+
+  Displays organizations you have logged into, including their aliases and which one is set as default.
+
+EXAMPLES
+  $ sc account list
+```
+
+_See code: [src/commands/account/list.ts](https://github.com/dishantlangayan/solace-cloud-cli/blob/v0.3.0/src/commands/account/list.ts)_
+
+## `sc account login`
+
+Login to a Solace Cloud organization.
+
+```
+USAGE
+  $ sc account login -o <value> [--json] [--log-level debug|warn|error|info|trace] [-a <value>] [--api-version
+    <value>] [--base-url <value>] [--no-prompt] [-d]
+
+FLAGS
+  -a, --alias=<value>        Alias name for this organization (allows storing multiple tokens for the same org with
+                             different aliases)
+  -d, --set-default          Set this organization as the default
+  -o, --org=<value>          (required) Organization ID to login to
+      --api-version=<value>  API version to use (optional)
+      --base-url=<value>     Custom base URL for Solace Cloud API (optional)
+      --no-prompt            Read access token from SC_ACCESS_TOKEN environment variable instead of prompting
+
+GLOBAL FLAGS
+  --json                Format output as json.
+  --log-level=<option>  [default: info] Specify level for logging.
+                        <options: debug|warn|error|info|trace>
+
+DESCRIPTION
+  Login to a Solace Cloud organization.
+
+  Stores organization credentials securely using OS keychain.
+  The access token is encrypted and stored locally.
+
+  You can store multiple access tokens for the same organization by using unique aliases.
+  Without an alias, only one token per organization ID is allowed.
+
+  Required token permissions: Varies by operations you intend to perform
+
+EXAMPLES
+  $ sc account login --org=my-org-id
+
+  $ sc account login --org=my-org-id --alias=production
+
+  $ sc account login --org=my-org-id --alias=staging
+
+  $ sc account login --org=my-org-id --set-default
+
+  $ sc account login --org=my-org-id --no-prompt
+
+  $ sc account login --org=my-org-id --base-url=https://api.custom.solace.cloud
+```
+
+_See code: [src/commands/account/login.ts](https://github.com/dishantlangayan/solace-cloud-cli/blob/v0.3.0/src/commands/account/login.ts)_
+
+## `sc account logout`
+
+Logout from authenticated organizations.
+
+```
+USAGE
+  $ sc account logout [--json] [--log-level debug|warn|error|info|trace] [-a] [--no-prompt] [-o <value>]
+
+FLAGS
+  -a, --all          Logout of all organizations
+  -o, --org=<value>  Organization ID or alias to logout from
+      --no-prompt    Skip confirmation prompt and assume Yes
+
+GLOBAL FLAGS
+  --json                Format output as json.
+  --log-level=<option>  [default: info] Specify level for logging.
+                        <options: debug|warn|error|info|trace>
+
+DESCRIPTION
+  Logout from authenticated organizations.
+
+  Removes locally stored organization credentials and access tokens.
+  Interactive mode allows selection with arrow keys and spacebar.
+
+EXAMPLES
+  $ sc account logout
+
+  $ sc account logout --org=my-org-id
+
+  $ sc account logout --org=production
+
+  $ sc account logout --all
+
+  $ sc account logout --org=my-org-id --no-prompt
+```
+
+_See code: [src/commands/account/logout.ts](https://github.com/dishantlangayan/solace-cloud-cli/blob/v0.3.0/src/commands/account/logout.ts)_
 
 ## `sc autocomplete [SHELL]`
 
@@ -149,135 +262,6 @@ EXAMPLES
 ```
 
 _See code: [@oclif/plugin-autocomplete](https://github.com/oclif/plugin-autocomplete/blob/v3.2.40/src/commands/autocomplete/index.ts)_
-
-## `sc broker queue create`
-
-Create a Queue on a Solace Cloud Broker.
-
-```
-USAGE
-  $ sc broker queue create -q <value> [--json] [--log-level debug|warn|error|info|trace] [-a exclusive|non-exclusive] [-b
-    <value>] [-n <value>] [--consumer-ack-propagation-enabled] [--dead-msg-queue <value>] [--delivery-count-enabled]
-    [--delivery-delay <value>] [--egress-enabled] [--ingress-enabled] [--max-bind-count <value>]
-    [--max-delivered-unacked-msgs-per-flow <value>] [--max-msg-size <value>] [-s <value>] [--max-redelivery-count
-    <value>] [--max-ttl <value>] [-o <value>] [-p consume|delete|modify-topic|no-access|read-only]
-    [--redelivery-delay-enabled] [--redelivery-delay-initial-interval <value>] [--redelivery-delay-max-interval <value>]
-    [--redelivery-delay-multiplier <value>] [--redelivery-enabled] [--reject-low-priority-msg-enabled]
-    [--reject-low-priority-msg-limit <value>] [--reject-msg-to-sender-on-discard-behavior
-    always|never|when-queue-enabled] [--respect-msg-priority-enabled] [--respect-ttl-enabled]
-
-FLAGS
-  -a, --access-type=<option>                               [default: exclusive] The access type for the queue.
-                                                           <options: exclusive|non-exclusive>
-  -b, --broker-id=<value>                                  Id of the event broker service.
-  -n, --broker-name=<value>                                Name of the event broker service.
-  -o, --owner=<value>                                      The client username that owns the queue and has permission
-                                                           equivalent to delete.
-  -p, --permission=<option>                                [default: no-access] The permission level for all consumers
-                                                           of the queue, excluding the owner.
-                                                           <options: consume|delete|modify-topic|no-access|read-only>
-  -q, --queue-name=<value>                                 (required) The name of the queue to create.
-  -s, --max-msg-spool-usage=<value>                        The maximum message spool usage allowed by the queue, in
-                                                           megabytes (MB).
-      --[no-]consumer-ack-propagation-enabled              Enable or disable the propagation of consumer
-                                                           acknowledgments.
-      --dead-msg-queue=<value>                             The name of the Dead Message Queue.
-      --[no-]delivery-count-enabled                        Enable or disable delivery count on the messages.
-      --delivery-delay=<value>                             The delay, in seconds, to apply to messages arriving on the
-                                                           queue before the messages are eligible for delivery.
-      --[no-]egress-enabled                                Enable or disable egress (message consumption) from the
-                                                           queue.
-      --[no-]ingress-enabled                               Enable or disable ingress (message reception) to the queue.
-      --max-bind-count=<value>                             The maximum number of consumer flows that can bind to the
-                                                           queue.
-      --max-delivered-unacked-msgs-per-flow=<value>        The maximum number of messages delivered but not acknowledged
-                                                           per flow.
-      --max-msg-size=<value>                               The maximum message size allowed in the queue, in bytes.
-      --max-redelivery-count=<value>                       The maximum number of times a message will be redelivered
-                                                           before it is discarded or moved to the DMQ.
-      --max-ttl=<value>                                    The maximum time in seconds a message can stay in the queue
-                                                           when respect-ttl-enabled is true.
-      --[no-]redelivery-delay-enabled                      Enable or disable a message redelivery delay.
-      --redelivery-delay-initial-interval=<value>          The delay to be used between the first 2 redelivery attempts,
-                                                           in milliseconds.
-      --redelivery-delay-max-interval=<value>              The maximum delay to be used between any 2 redelivery
-                                                           attempts, in milliseconds.
-      --redelivery-delay-multiplier=<value>                The amount each delay interval is multiplied by after each
-                                                           failed delivery attempt.
-      --[no-]redelivery-enabled                            Enable or disable message redelivery.
-      --[no-]reject-low-priority-msg-enabled               Enable or disable the checking of low priority messages
-                                                           against the reject-low-priority-msg-limit.
-      --reject-low-priority-msg-limit=<value>              The number of messages of any priority above which low
-                                                           priority messages are not admitted.
-      --reject-msg-to-sender-on-discard-behavior=<option>  Determines when to return negative acknowledgments (NACKs) to
-                                                           sending clients on message discards.
-                                                           <options: always|never|when-queue-enabled>
-      --[no-]respect-msg-priority-enabled                  Enable or disable the respecting of message priority.
-      --[no-]respect-ttl-enabled                           Enable or disable the respecting of the time-to-live (TTL)
-                                                           for messages.
-
-GLOBAL FLAGS
-  --json                Format output as json.
-  --log-level=<option>  [default: info] Specify level for logging.
-                        <options: debug|warn|error|info|trace>
-
-DESCRIPTION
-  Create a Queue on a Solace Cloud Broker.
-
-  Your token must have one of the permissions listed in the Token Permissions.
-
-  Token Permissions: [ mission_control:access or services:get or services:get:self or services:view or
-  services:view:self ]
-
-EXAMPLES
-  $ sc broker queue create --broker-id=MyBrokerId --queue-name=myQueue
-
-  $ sc broker queue create --broker-name=MyBrokerName --queue-name=myQueue --access-type=exclusive
-
-  $ sc broker queue create --broker-name=MyBrokerName --queue-name=myQueue --owner=user1 --permission=consume
-
-  $ sc broker queue create --broker-id=MyBrokerId --queue-name=myQueue --max-spool-usage=100 --ingress-enabled --egress-enabled
-```
-
-_See code: [@dishantlangayan/sc-plugin-queue](https://github.com/dishantlangayan/sc-plugin-queue/blob/v0.1.1/src/commands/broker/queue/create.ts)_
-
-## `sc broker queue list`
-
-Get a list of Queue objects from the Solace Cloud Broker.
-
-```
-USAGE
-  $ sc broker queue list [--json] [--log-level debug|warn|error|info|trace] [-b <value>] [-n <value>] [-c <value>] [-q
-    <value>]
-
-FLAGS
-  -b, --broker-id=<value>    Id of the event broker service.
-  -c, --count=<value>        [default: 10] Limit the number of queues returned
-  -n, --broker-name=<value>  Name of the event broker service.
-  -q, --queue-name=<value>   Name of the queue(s) to filter.
-
-GLOBAL FLAGS
-  --json                Format output as json.
-  --log-level=<option>  [default: info] Specify level for logging.
-                        <options: debug|warn|error|info|trace>
-
-DESCRIPTION
-  Get a list of Queue objects from the Solace Cloud Broker.
-
-  Token Permissions: [ mission_control:access or services:get or services:get:self or services:view or
-  services:view:self ]
-
-EXAMPLES
-  $ sc broker queue list --broker-id=MyBrokerId
-
-  $ sc broker queue list --broker-name=MyBrokerName
-
-  $ sc broker queue list --broker-name=MyBrokerName --count=10
-
-  $ sc broker queue list --broker-name=MyBrokerName --queue-name=test*"
-```
-
-_See code: [@dishantlangayan/sc-plugin-queue](https://github.com/dishantlangayan/sc-plugin-queue/blob/v0.1.1/src/commands/broker/queue/list.ts)_
 
 ## `sc commands`
 
@@ -335,7 +319,7 @@ Create an event broker service. You must provide a unique name and select a serv
 ```
 USAGE
   $ sc missionctrl broker create -d <value> -n <value> -c <value> [--json] [--log-level debug|warn|error|info|trace] [-e
-    <value>] [-l] [-s <value>] [-m <value>] [-r] [-v <value>]
+    <value>] [-l] [-s <value>] [-m <value>] [-o <value>] [-r] [-v <value>]
 
 FLAGS
   -c, --service-class-id=<value>
@@ -358,6 +342,9 @@ FLAGS
 
   -n, --name=<value>
       (required) Name of the event broker service to create.
+
+  -o, --org=<value>
+      Organization ID or alias to use. If not specified, uses the default organization.
 
   -r, --redundancy-group-ssl-enabled
       Enable or disable SSL for the redundancy group (for mate-link encryption). The default value is false (disabled)
@@ -383,9 +370,11 @@ DESCRIPTION
 
 EXAMPLES
   $ sc missionctrl broker create --name=MyBrokerName --datacenter-id=eks-ca-central-1a --service-class-id=DEVELOPER
+
+  $ sc missionctrl broker create --org=my-org --name=MyBrokerName --datacenter-id=eks-ca-central-1a --service-class-id=DEVELOPER
 ```
 
-_See code: [src/commands/missionctrl/broker/create.ts](https://github.com/dishantlangayan/solace-cloud-cli/blob/v0.2.1/src/commands/missionctrl/broker/create.ts)_
+_See code: [src/commands/missionctrl/broker/create.ts](https://github.com/dishantlangayan/solace-cloud-cli/blob/v0.3.0/src/commands/missionctrl/broker/create.ts)_
 
 ## `sc missionctrl broker delete`
 
@@ -393,11 +382,13 @@ Delete a service using its unique identifier.
 
 ```
 USAGE
-  $ sc missionctrl broker delete [--json] [--log-level debug|warn|error|info|trace] [-b <value>] [-n <value>]
+  $ sc missionctrl broker delete [--json] [--log-level debug|warn|error|info|trace] [-b <value>] [-n <value>] [-o
+  <value>]
 
 FLAGS
   -b, --broker-id=<value>  Id of the event broker service.
   -n, --name=<value>       Name of the event broker service.
+  -o, --org=<value>        Organization ID or alias to use. If not specified, uses the default organization.
 
 GLOBAL FLAGS
   --json                Format output as json.
@@ -415,9 +406,11 @@ EXAMPLES
   $ sc missionctrl broker delete --broker-id=MyBrokerId
 
   $ sc missionctrl broker delete --name=MyBrokerName
+
+  $ sc missionctrl broker delete --org=my-org --broker-id=MyBrokerId
 ```
 
-_See code: [src/commands/missionctrl/broker/delete.ts](https://github.com/dishantlangayan/solace-cloud-cli/blob/v0.2.1/src/commands/missionctrl/broker/delete.ts)_
+_See code: [src/commands/missionctrl/broker/delete.ts](https://github.com/dishantlangayan/solace-cloud-cli/blob/v0.3.0/src/commands/missionctrl/broker/delete.ts)_
 
 ## `sc missionctrl broker display`
 
@@ -425,11 +418,13 @@ Get the details of an event broker service using its identifier or name.
 
 ```
 USAGE
-  $ sc missionctrl broker display [--json] [--log-level debug|warn|error|info|trace] [-b <value>] [-n <value>]
+  $ sc missionctrl broker display [--json] [--log-level debug|warn|error|info|trace] [-b <value>] [-n <value>] [-o
+  <value>]
 
 FLAGS
   -b, --broker-id=<value>  Id of the event broker service.
   -n, --name=<value>       Name of the event broker service.
+  -o, --org=<value>        Organization ID or alias to use. If not specified, uses the default organization.
 
 GLOBAL FLAGS
   --json                Format output as json.
@@ -445,10 +440,12 @@ DESCRIPTION
   **or** `services:view:self` ]
 
 EXAMPLES
-  $ sc missionctrl broker display
+  $ sc missionctrl broker display --broker-id=MyBrokerId
+
+  $ sc missionctrl broker display --org=my-org --name=MyBrokerName
 ```
 
-_See code: [src/commands/missionctrl/broker/display.ts](https://github.com/dishantlangayan/solace-cloud-cli/blob/v0.2.1/src/commands/missionctrl/broker/display.ts)_
+_See code: [src/commands/missionctrl/broker/display.ts](https://github.com/dishantlangayan/solace-cloud-cli/blob/v0.3.0/src/commands/missionctrl/broker/display.ts)_
 
 ## `sc missionctrl broker list`
 
@@ -456,12 +453,15 @@ Get a listing of event broker services.
 
 ```
 USAGE
-  $ sc missionctrl broker list [--json] [--log-level debug|warn|error|info|trace] [-n <value>] [--pageNumber <value>]
-    [--pageSize <value>] [--sort <value>]
+  $ sc missionctrl broker list [--json] [--log-level debug|warn|error|info|trace] [-n <value>] [-o <value>] [--pageNumber
+    <value>] [--pageSize <value>] [--sort <value>]
 
 FLAGS
   -n, --name=<value>
       Name of the event broker service to match on.
+
+  -o, --org=<value>
+      Organization ID or alias to use. If not specified, uses the default organization.
 
   --pageNumber=<value>
       The page number to get. Defaults to 1
@@ -493,10 +493,12 @@ DESCRIPTION
 EXAMPLES
   $ sc missionctrl broker list
 
+  $ sc missionctrl broker list --org=my-org
+
   $ sc missionctrl broker list --name=MyBrokerName --pageNumber=1 --pageSize=10 --sort=name:asc
 ```
 
-_See code: [src/commands/missionctrl/broker/list.ts](https://github.com/dishantlangayan/solace-cloud-cli/blob/v0.2.1/src/commands/missionctrl/broker/list.ts)_
+_See code: [src/commands/missionctrl/broker/list.ts](https://github.com/dishantlangayan/solace-cloud-cli/blob/v0.3.0/src/commands/missionctrl/broker/list.ts)_
 
 ## `sc missionctrl broker opstatus`
 
@@ -504,12 +506,13 @@ Get the status of all operations being performed on an event broker service.
 
 ```
 USAGE
-  $ sc missionctrl broker opstatus [--json] [--log-level debug|warn|error|info|trace] [-b <value>] [-n <value>] [-p] [-w
-  <value>]
+  $ sc missionctrl broker opstatus [--json] [--log-level debug|warn|error|info|trace] [-b <value>] [-n <value>] [-o <value>] [-p]
+    [-w <value>]
 
 FLAGS
   -b, --broker-id=<value>  Id of the event broker service.
   -n, --name=<value>       Name of the event broker service.
+  -o, --org=<value>        Organization ID or alias to use. If not specified, uses the default organization.
   -p, --show-progress      Displays a status bar of the in-progress operations. The command will wait for completion of
                            each step of the operation.
   -w, --wait-ms=<value>    The milliseconds to wait between API calls for checking progress of the operation. Default is
@@ -531,9 +534,11 @@ EXAMPLES
   $ sc missionctrl broker opstatus -b <broker-id>
 
   $ sc missionctrl broker opstatus -n <broker-name>
+
+  $ sc missionctrl broker opstatus --org=my-org -b <broker-id>
 ```
 
-_See code: [src/commands/missionctrl/broker/opstatus.ts](https://github.com/dishantlangayan/solace-cloud-cli/blob/v0.2.1/src/commands/missionctrl/broker/opstatus.ts)_
+_See code: [src/commands/missionctrl/broker/opstatus.ts](https://github.com/dishantlangayan/solace-cloud-cli/blob/v0.3.0/src/commands/missionctrl/broker/opstatus.ts)_
 
 ## `sc missionctrl broker state`
 
@@ -541,11 +546,13 @@ Get the availability state of an event broker service and the name of the active
 
 ```
 USAGE
-  $ sc missionctrl broker state [--json] [--log-level debug|warn|error|info|trace] [-b <value>] [-n <value>]
+  $ sc missionctrl broker state [--json] [--log-level debug|warn|error|info|trace] [-b <value>] [-n <value>] [-o
+  <value>]
 
 FLAGS
   -b, --broker-id=<value>  Id of the event broker service.
   -n, --name=<value>       Name of the event broker service.
+  -o, --org=<value>        Organization ID or alias to use. If not specified, uses the default organization.
 
 GLOBAL FLAGS
   --json                Format output as json.
@@ -565,9 +572,11 @@ EXAMPLES
   $ sc missionctrl broker state --broker-id=MyBrokerServiceId
 
   $ sc missionctrl broker state --name=MyBrokerName
+
+  $ sc missionctrl broker state --org=my-org --broker-id=MyBrokerServiceId
 ```
 
-_See code: [src/commands/missionctrl/broker/state.ts](https://github.com/dishantlangayan/solace-cloud-cli/blob/v0.2.1/src/commands/missionctrl/broker/state.ts)_
+_See code: [src/commands/missionctrl/broker/state.ts](https://github.com/dishantlangayan/solace-cloud-cli/blob/v0.3.0/src/commands/missionctrl/broker/state.ts)_
 
 ## `sc missionctrl broker update`
 
@@ -576,13 +585,14 @@ Update the configuration of an existing event broker service.
 ```
 USAGE
   $ sc missionctrl broker update [--json] [--log-level debug|warn|error|info|trace] [-b <value>] [-l <value>] [-n <value>]
-    [--new-name <value>]
+    [--new-name <value>] [-o <value>]
 
 FLAGS
   -b, --broker-id=<value>  Id of the event broker service.
   -l, --locked=<value>     Indicates whether the event broker service has deletion protection enabled. The valid values
                            are 'true' (enabled) or 'false' (disabled).
   -n, --name=<value>       Name of the event broker service.
+  -o, --org=<value>        Organization ID or alias to use. If not specified, uses the default organization.
       --new-name=<value>   New name of the event broker service. The new service name must be unique within an
                            organization.
 
@@ -604,10 +614,10 @@ EXAMPLES
 
   $ sc missionctrl broker update --broker-id <broker-id> --new-name <new-name>
 
-  $ sc missionctrl broker update --name <name> --new-name <new-name>
+  $ sc missionctrl broker update --org=my-org --name <name> --new-name <new-name>
 ```
 
-_See code: [src/commands/missionctrl/broker/update.ts](https://github.com/dishantlangayan/solace-cloud-cli/blob/v0.2.1/src/commands/missionctrl/broker/update.ts)_
+_See code: [src/commands/missionctrl/broker/update.ts](https://github.com/dishantlangayan/solace-cloud-cli/blob/v0.3.0/src/commands/missionctrl/broker/update.ts)_
 
 ## `sc platform env create`
 
@@ -616,11 +626,12 @@ Create a new environment.
 ```
 USAGE
   $ sc platform env create -n <value> [--json] [--log-level debug|warn|error|info|trace] [-d <value>] [--isDefault]
-    [--isProduction]
+    [--isProduction] [-o <value>]
 
 FLAGS
   -d, --description=<value>  Description of the environment to create.
   -n, --name=<value>         (required) Name of the environment to create.
+  -o, --org=<value>          Organization ID or alias to use. If not specified, uses the default organization.
       --isDefault            Indicates this is the organization's default environment.
       --isProduction         Indicates this is an organization's production environment.
                              This is an immutable field. If an environment needs to be migrated,
@@ -638,10 +649,12 @@ DESCRIPTION
   Token Permissions: [ environments:edit ]
 
 EXAMPLES
-  $ sc platform env create --name=MyEnvironment --description="My environment description" --isDefault --isProduction
+  $ sc platform env create --name=MyEnvironment
+
+  $ sc platform env create --org=my-org --name=MyEnvironment --description="My environment description" --isDefault --isProduction
 ```
 
-_See code: [src/commands/platform/env/create.ts](https://github.com/dishantlangayan/solace-cloud-cli/blob/v0.2.1/src/commands/platform/env/create.ts)_
+_See code: [src/commands/platform/env/create.ts](https://github.com/dishantlangayan/solace-cloud-cli/blob/v0.3.0/src/commands/platform/env/create.ts)_
 
 ## `sc platform env delete`
 
@@ -649,11 +662,12 @@ Delete an environment using either its name or unique identifier. The default en
 
 ```
 USAGE
-  $ sc platform env delete [--json] [--log-level debug|warn|error|info|trace] [-e <value>] [-n <value>]
+  $ sc platform env delete [--json] [--log-level debug|warn|error|info|trace] [-e <value>] [-n <value>] [-o <value>]
 
 FLAGS
   -e, --env-id=<value>  Id of the environment.
   -n, --name=<value>    Name of the environment.
+  -o, --org=<value>     Organization ID or alias to use. If not specified, uses the default organization.
 
 GLOBAL FLAGS
   --json                Format output as json.
@@ -669,9 +683,11 @@ EXAMPLES
   $ sc platform env delete --name=MyEnvName
 
   $ sc platform env delete --env-id=MyEnvId
+
+  $ sc platform env delete --org=my-org --name=MyEnvName
 ```
 
-_See code: [src/commands/platform/env/delete.ts](https://github.com/dishantlangayan/solace-cloud-cli/blob/v0.2.1/src/commands/platform/env/delete.ts)_
+_See code: [src/commands/platform/env/delete.ts](https://github.com/dishantlangayan/solace-cloud-cli/blob/v0.3.0/src/commands/platform/env/delete.ts)_
 
 ## `sc platform env display`
 
@@ -679,11 +695,12 @@ Display information about an Environment.
 
 ```
 USAGE
-  $ sc platform env display [--json] [--log-level debug|warn|error|info|trace] [-e <value>] [-n <value>]
+  $ sc platform env display [--json] [--log-level debug|warn|error|info|trace] [-e <value>] [-n <value>] [-o <value>]
 
 FLAGS
   -e, --env-id=<value>  Id of the environment.
   -n, --name=<value>    Name of the environment.
+  -o, --org=<value>     Organization ID or alias to use. If not specified, uses the default organization.
 
 GLOBAL FLAGS
   --json                Format output as json.
@@ -701,9 +718,11 @@ EXAMPLES
   $ sc platform env display --name=MyEnvName
 
   $ sc platform env display --env-id=MyEnvId
+
+  $ sc platform env display --org=my-org --env-id=MyEnvId
 ```
 
-_See code: [src/commands/platform/env/display.ts](https://github.com/dishantlangayan/solace-cloud-cli/blob/v0.2.1/src/commands/platform/env/display.ts)_
+_See code: [src/commands/platform/env/display.ts](https://github.com/dishantlangayan/solace-cloud-cli/blob/v0.3.0/src/commands/platform/env/display.ts)_
 
 ## `sc platform env list`
 
@@ -711,11 +730,12 @@ Get a list of all Environments.
 
 ```
 USAGE
-  $ sc platform env list [--json] [--log-level debug|warn|error|info|trace] [-n <value>] [-p <value>] [-s <value>]
-    [--sort <value>]
+  $ sc platform env list [--json] [--log-level debug|warn|error|info|trace] [-n <value>] [-o <value>] [-p <value>] [-s
+    <value>] [--sort <value>]
 
 FLAGS
   -n, --name=<value>        Name of the environment to match on.
+  -o, --org=<value>         Organization ID or alias to use. If not specified, uses the default organization.
   -p, --pageNumber=<value>  The page number to get. Defaults to 10
   -s, --pageSize=<value>    The number of environments to get per page. Defaults to 1
       --sort=<value>        The query (fieldName:<ASC/DESC>) used to sort the environment list in the response.
@@ -733,10 +753,12 @@ DESCRIPTION
 EXAMPLES
   $ sc platform env list
 
+  $ sc platform env list --org=my-org
+
   $ sc platform env list --name=Default --pageNumber=1 --pageSize=10 --sort=name:ASC
 ```
 
-_See code: [src/commands/platform/env/list.ts](https://github.com/dishantlangayan/solace-cloud-cli/blob/v0.2.1/src/commands/platform/env/list.ts)_
+_See code: [src/commands/platform/env/list.ts](https://github.com/dishantlangayan/solace-cloud-cli/blob/v0.3.0/src/commands/platform/env/list.ts)_
 
 ## `sc platform env update`
 
@@ -745,12 +767,13 @@ Modify an environment's attributes
 ```
 USAGE
   $ sc platform env update [--json] [--log-level debug|warn|error|info|trace] [-d <value>] [-e <value>] [--isDefault] [-n
-    <value>] [--new-name <value>]
+    <value>] [--new-name <value>] [-o <value>]
 
 FLAGS
   -d, --description=<value>  Description of the environment to update.
   -e, --env-id=<value>       Id of the environment.
   -n, --name=<value>         Current name of the environment.
+  -o, --org=<value>          Organization ID or alias to use. If not specified, uses the default organization.
       --isDefault            Indicates this is the organization's default environment. The default value is false.
       --new-name=<value>     New name of the environment.
 
@@ -768,12 +791,14 @@ DESCRIPTION
 
 
 EXAMPLES
-  $ sc platform env update --name=MyEnvName --new-name=MyNewEnvName --description="My description to update" --isDefault
+  $ sc platform env update --name=MyEnvName --new-name=MyNewEnvName
 
   $ sc platform env update --env-id=MyEnvId --new-name=MyNewEnvName --description="My description to update" --isDefault
+
+  $ sc platform env update --org=my-org --name=MyEnvName --isDefault
 ```
 
-_See code: [src/commands/platform/env/update.ts](https://github.com/dishantlangayan/solace-cloud-cli/blob/v0.2.1/src/commands/platform/env/update.ts)_
+_See code: [src/commands/platform/env/update.ts](https://github.com/dishantlangayan/solace-cloud-cli/blob/v0.3.0/src/commands/platform/env/update.ts)_
 
 ## `sc plugins`
 
