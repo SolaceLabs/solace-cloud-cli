@@ -55,9 +55,34 @@ describe('account:login', () => {
     const {stdout} = await runCommand(`account:login --org=${testOrg} --alias=${testAlias} --no-prompt`)
 
     // Assert
+    expect(orgManagerStub.orgExists.calledWith(testAlias)).to.be.true
     const addOrgCall = orgManagerStub.addOrg.getCall(0).args[0] as OrgConfig
     expect(addOrgCall.alias).to.equal(testAlias)
     expect(stdout).to.contain(`(${testAlias})`)
+  })
+
+  it('allows multiple logins for same org with different aliases --no-prompt', async () => {
+    // Arrange
+    const testOrg = 'test-org-multi'
+    const testToken = 'test-token'
+    process.env.SC_ACCESS_TOKEN = testToken
+
+    // First login with alias 'production'
+    orgManagerStub.orgExists.withArgs('production').resolves(false)
+    orgManagerStub.addOrg.resolves()
+
+    await runCommand(`account:login --org=${testOrg} --alias=production --no-prompt`)
+
+    // Second login with alias 'staging' (same org, different alias)
+    orgManagerStub.orgExists.withArgs('staging').resolves(false)
+
+    // Act
+    const {stdout} = await runCommand(`account:login --org=${testOrg} --alias=staging --no-prompt`)
+
+    // Assert
+    expect(orgManagerStub.orgExists.calledWith('staging')).to.be.true
+    expect(orgManagerStub.addOrg.calledTwice).to.be.true
+    expect(stdout).to.contain('Successfully logged in')
   })
 
   it('runs account:login --org=test-org --set-default --no-prompt', async () => {
@@ -76,6 +101,24 @@ describe('account:login', () => {
     // Assert
     expect(orgManagerStub.setDefaultOrg.calledWith(testOrg)).to.be.true
     expect(stdout).to.contain('Set as default organization')
+  })
+
+  it('sets default using alias when both --alias and --set-default are provided --no-prompt', async () => {
+    // Arrange
+    const testOrg = 'test-org-default'
+    const testAlias = 'production'
+    const testToken = 'test-token'
+    process.env.SC_ACCESS_TOKEN = testToken
+
+    orgManagerStub.orgExists.resolves(false)
+    orgManagerStub.addOrg.resolves()
+    orgManagerStub.setDefaultOrg.resolves()
+
+    // Act
+    await runCommand(`account:login --org=${testOrg} --alias=${testAlias} --set-default --no-prompt`)
+
+    // Assert
+    expect(orgManagerStub.setDefaultOrg.calledWith(testAlias)).to.be.true
   })
 
   it('runs account:login with custom base-url and api-version --no-prompt', async () => {
@@ -117,6 +160,33 @@ describe('account:login', () => {
     // Assert
     expect(confirmStub.calledOnce).to.be.true
     expect(orgManagerStub.removeOrg.calledWith(testOrg)).to.be.true
+    expect(orgManagerStub.addOrg.calledOnce).to.be.true
+    expect(stdout).to.contain('Successfully updated organization')
+
+    // Cleanup
+    confirmStub.restore()
+  })
+
+  it('overwrites existing alias when user confirms --no-prompt', async () => {
+    // Arrange
+    const testOrg = 'test-org'
+    const testAlias = 'existing-alias'
+    const testToken = 'new-token'
+    process.env.SC_ACCESS_TOKEN = testToken
+
+    orgManagerStub.orgExists.resolves(true)
+    orgManagerStub.removeOrg.resolves()
+    orgManagerStub.addOrg.resolves()
+
+    // Stub confirmation to auto-accept
+    const confirmStub = sinon.stub(AccountLogin.prototype as unknown as Record<string, unknown>, 'promptForConfirmation').resolves(true)
+
+    // Act
+    const {stdout} = await runCommand(`account:login --org=${testOrg} --alias=${testAlias} --no-prompt`)
+
+    // Assert
+    expect(confirmStub.calledOnce).to.be.true
+    expect(orgManagerStub.removeOrg.calledWith(testAlias)).to.be.true
     expect(orgManagerStub.addOrg.calledOnce).to.be.true
     expect(stdout).to.contain('Successfully updated organization')
 

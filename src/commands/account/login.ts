@@ -12,10 +12,14 @@ export default class AccountLogin extends ScCommand<typeof AccountLogin> {
 Stores organization credentials securely using OS keychain.
 The access token is encrypted and stored locally.
 
+You can store multiple access tokens for the same organization by using unique aliases.
+Without an alias, only one token per organization ID is allowed.
+
 Required token permissions: Varies by operations you intend to perform`
   static override examples = [
     '<%= config.bin %> <%= command.id %> --org=my-org-id',
     '<%= config.bin %> <%= command.id %> --org=my-org-id --alias=production',
+    '<%= config.bin %> <%= command.id %> --org=my-org-id --alias=staging',
     '<%= config.bin %> <%= command.id %> --org=my-org-id --set-default',
     '<%= config.bin %> <%= command.id %> --org=my-org-id --no-prompt',
     '<%= config.bin %> <%= command.id %> --org=my-org-id --base-url=https://api.custom.solace.cloud',
@@ -23,7 +27,7 @@ Required token permissions: Varies by operations you intend to perform`
   static override flags = {
     'alias': Flags.string({
       char: 'a',
-      description: 'Alias name for this organization (optional)',
+      description: 'Alias name for this organization (allows storing multiple tokens for the same org with different aliases)',
     }),
     'api-version': Flags.string({
       description: 'API version to use (optional)',
@@ -51,105 +55,142 @@ Required token permissions: Varies by operations you intend to perform`
     const {flags} = await this.parse(AccountLogin)
 
     try {
-      // Get OrgManager instance
       const orgManager: OrgManager = await this.getOrgManager()
+      const identifier = flags.alias ?? flags.org
 
-      // Check if organization already exists
-      const orgExists = await orgManager.orgExists(flags.org)
-      let isUpdate = false
-
-      if (orgExists) {
-        // Prompt for overwrite confirmation
-        const shouldOverwrite = await this.promptForConfirmation(
-          `Organization '${flags.org}' already exists. Do you want to overwrite the access token?`,
-        )
-
-        if (!shouldOverwrite) {
-          this.log('Login cancelled.')
-          this.exit(0)
-        }
-
-        // Remove existing organization to allow overwrite
-        await orgManager.removeOrg(flags.org)
-        isUpdate = true
-      }
+      // Handle existing organization/alias
+      const isUpdate = await this.handleExistingEntry(orgManager, identifier, flags.alias)
 
       // Obtain access token
-      let accessToken: string
+      const accessToken = await this.obtainAccessToken(flags['no-prompt'])
 
-      if (flags['no-prompt']) {
-        // Read from environment variable
-        accessToken = process.env.SC_ACCESS_TOKEN || ''
-        if (!accessToken) {
-          this.error('SC_ACCESS_TOKEN environment variable is not set. Please set it or remove the --no-prompt flag.')
-        }
-      } else {
-        // Prompt for token
-        accessToken = await this.promptForToken()
-      }
-
-      // Create OrgConfig object
-      const orgConfig: OrgConfig = {
-        accessToken,
-        alias: flags.alias,
-        apiVersion: flags['api-version'],
-        baseUrl: flags['base-url'] ?? DEFAULT_BASE_URL,
-        orgId: flags.org,
-      }
-
-      // Store organization
+      // Create and store organization config
+      const orgConfig = this.createOrgConfig(flags, accessToken)
       await orgManager.addOrg(orgConfig)
 
       // Set as default if requested
       if (flags['set-default']) {
-        await orgManager.setDefaultOrg(flags.org)
+        await orgManager.setDefaultOrg(identifier)
       }
 
       // Display success message
-      const action = isUpdate ? 'updated' : 'logged in to'
-      const aliasText = flags.alias ? ` (${flags.alias})` : ''
-      this.log(`Successfully ${action} organization '${flags.org}'${aliasText}`)
+      this.displaySuccessMessage(isUpdate, flags.org, flags.alias, flags['set-default'])
 
-      if (flags['set-default']) {
-        this.log('Set as default organization.')
-      }
-
-      // Return for --json support
       return orgConfig
     } catch (error) {
-      // Handle OrgManager errors
-      if (error instanceof OrgError) {
-        switch (error.code) {
-          case OrgErrorCode.FILE_WRITE_ERROR: {
-            this.error('Failed to save credentials. Please check file permissions.')
-            break
-          }
+      this.handleLoginError(error)
+    }
+  }
 
-          case OrgErrorCode.INVALID_ACCESS_TOKEN: {
-            this.error('Invalid access token format. Please check your token and try again.')
-            break
-          }
+  /**
+   * Creates organization configuration object
+   */
+  private createOrgConfig(
+    flags: {
+      alias?: string
+      'api-version'?: string
+      'base-url'?: string
+      org: string
+    },
+    accessToken: string,
+  ): OrgConfig {
+    return {
+      accessToken,
+      alias: flags.alias,
+      apiVersion: flags['api-version'],
+      baseUrl: flags['base-url'] ?? DEFAULT_BASE_URL,
+      orgId: flags.org,
+    }
+  }
 
-          case OrgErrorCode.INVALID_ORG_ID: {
-            this.error('Invalid organization ID format. Please check and try again.')
-            break
-          }
+  /**
+   * Displays success message after login
+   */
+  private displaySuccessMessage(isUpdate: boolean, orgId: string, alias?: string, setDefault?: boolean): void {
+    const action = isUpdate ? 'updated' : 'logged in to'
+    const aliasText = alias ? ` (${alias})` : ''
+    this.log(`Successfully ${action} organization '${orgId}'${aliasText}`)
 
-          default: {
-            this.error(`Login failed: ${error.message}`)
-            break
-          }
+    if (setDefault) {
+      this.log('Set as default organization.')
+    }
+  }
+
+  /**
+   * Checks if entry exists and handles overwrite confirmation
+   */
+  private async handleExistingEntry(orgManager: OrgManager, identifier: string, alias?: string): Promise<boolean> {
+    const exists = await orgManager.orgExists(identifier)
+    if (!exists) {
+      return false
+    }
+
+    const identifierType = alias ? 'alias' : 'organization'
+    const identifierDisplay = alias ? `alias '${alias}'` : `organization '${identifier}'`
+
+    const shouldOverwrite = await this.promptForConfirmation(
+      `${identifierType === 'alias' ? 'An entry with' : 'Organization'} ${identifierDisplay} already exists. Do you want to overwrite the access token?`,
+    )
+
+    if (!shouldOverwrite) {
+      this.log('Login cancelled.')
+      this.exit(0)
+    }
+
+    await orgManager.removeOrg(identifier)
+    return true
+  }
+
+  /**
+   * Handles errors during login process
+   */
+  private handleLoginError(error: unknown): never {
+    if (error instanceof OrgError) {
+      switch (error.code) {
+        case OrgErrorCode.FILE_WRITE_ERROR: {
+          this.error('Failed to save credentials. Please check file permissions.')
+          break
+        }
+
+        case OrgErrorCode.INVALID_ACCESS_TOKEN: {
+          this.error('Invalid access token format. Please check your token and try again.')
+          break
+        }
+
+        case OrgErrorCode.INVALID_ORG_ID: {
+          this.error('Invalid organization ID format. Please check and try again.')
+          break
+        }
+
+        default: {
+          this.error(`Login failed: ${error.message}`)
+          break
         }
       }
+    }
 
-      // Handle user cancellation
-      if (error instanceof Error && error.message === 'Cancelled by user') {
-        this.error('Login cancelled.')
+    if (error instanceof Error && error.message === 'Cancelled by user') {
+      this.error('Login cancelled.')
+    }
+
+    // Re-throw unexpected errors
+    throw error
+  }
+
+  /**
+   * Obtains access token from environment or user prompt
+   */
+  private async obtainAccessToken(noPrompt: boolean): Promise<string> {
+    if (noPrompt) {
+      const accessToken = process.env.SC_ACCESS_TOKEN || ''
+      if (!accessToken) {
+        this.error('SC_ACCESS_TOKEN environment variable is not set. Please set it or remove the --no-prompt flag.')
       }
 
-      // Re-throw unexpected errors
-      throw error
+      return accessToken
     }
+
+    return this.promptForToken()
   }
 
   /**
