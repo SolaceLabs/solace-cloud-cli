@@ -74,7 +74,7 @@ describe('missionctrl:broker:delete', () => {
     scConnDeleteStub.returns(expectBrokerOpResponse)
 
     // Act
-    const {stdout} = await runCommand(`missionctrl:broker:delete -b ${brokerId}`)
+    const {stdout} = await runCommand(`missionctrl:broker:delete -b ${brokerId} --no-prompt`)
 
     // Assert
     expect(orgManagerStub.getDefaultOrg.calledOnce).to.be.true
@@ -101,7 +101,7 @@ describe('missionctrl:broker:delete', () => {
     scConnDeleteStub.returns(expectBrokerOpResponse)
 
     // Act
-    const {stdout} = await runCommand(`missionctrl:broker:delete -n ${brokerName}`)
+    const {stdout} = await runCommand(`missionctrl:broker:delete -n ${brokerName} --no-prompt`)
 
     // Assert
     expect(scConnGetStub.getCall(0).args[0]).to.contain(`customAttributes=name=="${brokerName}"`)
@@ -121,7 +121,7 @@ describe('missionctrl:broker:delete', () => {
     scConnDeleteStub.returns(expectBrokerOpResponse)
 
     // Act
-    const {stdout} = await runCommand(`missionctrl:broker:delete --alias=test-alias -b ${brokerId}`)
+    const {stdout} = await runCommand(`missionctrl:broker:delete --alias=test-alias -b ${brokerId} --no-prompt`)
 
     // Assert
     expect(orgManagerStub.getOrg.calledWith('test-alias')).to.be.true

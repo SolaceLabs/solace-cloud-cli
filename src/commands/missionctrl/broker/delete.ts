@@ -1,4 +1,5 @@
 import {printObjectAsKeyValueTable, ScCommand} from '@dishantlangayan/sc-cli-core'
+import {confirm} from '@inquirer/prompts'
 import {Flags} from '@oclif/core'
 
 import {resolveOrgConnection} from '../../../lib/org-utils.js'
@@ -16,6 +17,7 @@ Token Permissions: [ \`services:delete\` **or** \`services:delete:self\` **or** 
     '<%= config.bin %> <%= command.id %> --name=MyBrokerName',
     '<%= config.bin %> <%= command.id %> --org=my-org --broker-id=MyBrokerId',
     '<%= config.bin %> <%= command.id %> --alias=my-alias --name=MyBrokerName',
+    '<%= config.bin %> <%= command.id %> --broker-id=MyBrokerId --no-prompt',
   ]
   static override flags = {
     alias: Flags.string({
@@ -32,6 +34,10 @@ Token Permissions: [ \`services:delete\` **or** \`services:delete:self\` **or** 
       char: 'n',
       description: 'Name of the event broker service.',
       exactlyOne: ['broker-id', 'name'],
+    }),
+    'no-prompt': Flags.boolean({
+      default: false,
+      description: 'Skip confirmation prompt and assume Yes',
     }),
     org: Flags.string({
       char: 'o',
@@ -64,6 +70,26 @@ Token Permissions: [ \`services:delete\` **or** \`services:delete:self\` **or** 
         )
       } else {
         brokerIdToDelete = resp.data[0]?.id
+      }
+    }
+
+    // Confirm deletion unless --no-prompt flag is set
+    if (!flags['no-prompt']) {
+      const brokerIdentifier = name || brokerId
+      try {
+        const shouldProceed = await confirm({
+          default: false,
+          message: `Are you sure you want to delete the broker '${brokerIdentifier}'?`,
+        })
+
+        if (!shouldProceed) {
+          this.log('Deletion cancelled.')
+          this.exit(0)
+        }
+      } catch {
+        // User cancelled the confirmation (Ctrl+C)
+        this.log('Deletion cancelled.')
+        this.exit(0)
       }
     }
 
