@@ -148,8 +148,7 @@ describe('account:login', () => {
     process.env.SC_ACCESS_TOKEN = testToken
 
     orgManagerStub.orgExists.resolves(true)
-    orgManagerStub.removeOrg.resolves()
-    orgManagerStub.addOrg.resolves()
+    orgManagerStub.updateOrg.resolves()
 
     // Stub confirmation to auto-accept
     const confirmStub = sinon.stub(AccountLogin.prototype as unknown as Record<string, unknown>, 'promptForConfirmation').resolves(true)
@@ -159,8 +158,8 @@ describe('account:login', () => {
 
     // Assert
     expect(confirmStub.calledOnce).to.be.true
-    expect(orgManagerStub.removeOrg.calledWith(testOrg)).to.be.true
-    expect(orgManagerStub.addOrg.calledOnce).to.be.true
+    expect(orgManagerStub.updateOrg.calledOnce).to.be.true
+    expect(orgManagerStub.updateOrg.calledWith(testOrg, sinon.match({orgId: testOrg, accessToken: testToken}))).to.be.true
     expect(stdout).to.contain('Successfully updated organization')
 
     // Cleanup
@@ -175,8 +174,7 @@ describe('account:login', () => {
     process.env.SC_ACCESS_TOKEN = testToken
 
     orgManagerStub.orgExists.resolves(true)
-    orgManagerStub.removeOrg.resolves()
-    orgManagerStub.addOrg.resolves()
+    orgManagerStub.updateOrg.resolves()
 
     // Stub confirmation to auto-accept
     const confirmStub = sinon.stub(AccountLogin.prototype as unknown as Record<string, unknown>, 'promptForConfirmation').resolves(true)
@@ -186,8 +184,8 @@ describe('account:login', () => {
 
     // Assert
     expect(confirmStub.calledOnce).to.be.true
-    expect(orgManagerStub.removeOrg.calledWith(testAlias)).to.be.true
-    expect(orgManagerStub.addOrg.calledOnce).to.be.true
+    expect(orgManagerStub.updateOrg.calledOnce).to.be.true
+    expect(orgManagerStub.updateOrg.calledWith(testAlias, sinon.match({orgId: testOrg, alias: testAlias, accessToken: testToken}))).to.be.true
     expect(stdout).to.contain('Successfully updated organization')
 
     // Cleanup
@@ -209,7 +207,7 @@ describe('account:login', () => {
 
     // Assert
     expect(confirmStub.calledOnce).to.be.true
-    expect(orgManagerStub.removeOrg.called).to.be.false
+    expect(orgManagerStub.updateOrg.called).to.be.false
     expect(orgManagerStub.addOrg.called).to.be.false
     expect(stdout).to.contain('Login cancelled')
 

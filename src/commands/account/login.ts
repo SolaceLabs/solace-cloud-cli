@@ -66,7 +66,7 @@ Required token permissions: Varies by operations you intend to perform`
 
       // Create and store organization config
       const orgConfig = this.createOrgConfig(flags, accessToken)
-      await orgManager.addOrg(orgConfig)
+      await (isUpdate ? orgManager.updateOrg(identifier, orgConfig) : orgManager.addOrg(orgConfig))
 
       // Set as default if requested
       if (flags['set-default']) {
@@ -137,7 +137,6 @@ Required token permissions: Varies by operations you intend to perform`
       this.exit(0)
     }
 
-    await orgManager.removeOrg(identifier)
     return true
   }
 
