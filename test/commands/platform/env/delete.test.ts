@@ -80,7 +80,7 @@ describe('platform:env:delete', () => {
     scConnDeleteStub.returns(deleteSuccessMsg)
 
     // Act
-    const {stdout} = await runCommand(`platform:env:delete --name ${envName}`)
+    const {stdout} = await runCommand(`platform:env:delete --name ${envName} --no-prompt`)
 
     // Assert
     expect(orgManagerStub.getDefaultOrg.calledOnce).to.be.true
@@ -96,7 +96,7 @@ describe('platform:env:delete', () => {
     scConnDeleteStub.returns(deleteSuccessMsg)
 
     // Act
-    const {stdout} = await runCommand(`platform:env:delete --env-id id${envName}`)
+    const {stdout} = await runCommand(`platform:env:delete --env-id id${envName} --no-prompt`)
 
     // Assert
     expect(scConnDeleteStub.getCall(0).calledWith(`/platform/environments/id${envName}`)).to.be.true
@@ -123,7 +123,7 @@ describe('platform:env:delete', () => {
     scConnDeleteStub.returns(deleteSuccessMsg)
 
     // Act
-    const {stdout} = await runCommand(`platform:env:delete --alias=test-alias --name ${envName}`)
+    const {stdout} = await runCommand(`platform:env:delete --alias=test-alias --name ${envName} --no-prompt`)
 
     // Assert
     expect(orgManagerStub.getOrg.calledWith('test-alias')).to.be.true

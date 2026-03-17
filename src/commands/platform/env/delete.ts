@@ -1,4 +1,5 @@
 import {ScCommand} from '@dishantlangayan/sc-cli-core'
+import {confirm} from '@inquirer/prompts'
 import {Flags} from '@oclif/core'
 
 import {resolveOrgConnection} from '../../../lib/org-utils.js'
@@ -14,6 +15,7 @@ export default class PlatformEnvDelete extends ScCommand<typeof PlatformEnvDelet
     '<%= config.bin %> <%= command.id %> --env-id=MyEnvId',
     '<%= config.bin %> <%= command.id %> --org=my-org --name=MyEnvName',
     '<%= config.bin %> <%= command.id %> --alias=my-alias --name=MyEnvName',
+    '<%= config.bin %> <%= command.id %> --env-id=MyEnvId --no-prompt',
   ]
   static override flags = {
     alias: Flags.string({
@@ -30,6 +32,10 @@ export default class PlatformEnvDelete extends ScCommand<typeof PlatformEnvDelet
       char: 'n',
       description: 'Name of the environment.',
       exactlyOne: ['env-id', 'name'],
+    }),
+    'no-prompt': Flags.boolean({
+      default: false,
+      description: 'Skip confirmation prompt and assume Yes',
     }),
     org: Flags.string({
       char: 'o',
@@ -69,6 +75,26 @@ export default class PlatformEnvDelete extends ScCommand<typeof PlatformEnvDelet
       message = `Multiple environments found with: ${name}. Exactly one environment must match the provided name.`
       this.warn(message)
     } else {
+      // Confirm deletion unless --no-prompt flag is set
+      if (!flags['no-prompt']) {
+        const envIdentifier = name || envId
+        try {
+          const shouldProceed = await confirm({
+            default: false,
+            message: `Are you sure you want to delete the environment '${envIdentifier}'?`,
+          })
+
+          if (!shouldProceed) {
+            this.log('Deletion cancelled.')
+            this.exit(0)
+          }
+        } catch {
+          // User cancelled the confirmation (Ctrl+C)
+          this.log('Deletion cancelled.')
+          this.exit(0)
+        }
+      }
+
       // API call to delete environment by id
       apiUrl += `/${envIdToDelete}`
       await conn.delete<string>(apiUrl)
