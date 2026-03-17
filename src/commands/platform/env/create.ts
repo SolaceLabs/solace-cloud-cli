@@ -12,8 +12,14 @@ export default class PlatformEnvCreate extends ScCommand<typeof PlatformEnvCreat
   static override examples = [
     '<%= config.bin %> <%= command.id %> --name=MyEnvironment',
     '<%= config.bin %> <%= command.id %> --org=my-org --name=MyEnvironment --description="My environment description" --isDefault --isProduction',
+    '<%= config.bin %> <%= command.id %> --alias=my-alias --name=MyEnvironment --isDefault',
   ]
   static override flags = {
+    alias: Flags.string({
+      char: 'a',
+      description: 'Organization alias to use. If not specified, uses the default organization.',
+      exclusive: ['org'],
+    }),
     description: Flags.string({
       char: 'd',
       description: 'Description of the environment to create.',
@@ -34,7 +40,8 @@ export default class PlatformEnvCreate extends ScCommand<typeof PlatformEnvCreat
     }),
     org: Flags.string({
       char: 'o',
-      description: 'Organization ID or alias to use. If not specified, uses the default organization.',
+      description: 'Organization ID to use. If not specified, uses the default organization or alias if specified.',
+      exclusive: ['alias'],
     }),
   }
 
@@ -46,7 +53,7 @@ export default class PlatformEnvCreate extends ScCommand<typeof PlatformEnvCreat
     const isDefault = flags.isDefault ?? false
     const isProduction = flags.isProduction ?? false
 
-    const conn = await resolveOrgConnection(this, flags.org)
+    const conn = await resolveOrgConnection(this, flags.org ?? flags.alias)
 
     // API url
     const apiUrl: string = `/platform/environments`

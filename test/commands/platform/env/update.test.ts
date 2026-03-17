@@ -30,6 +30,19 @@ describe('platform:env:update', () => {
       orgId: 'default-org',
     })
 
+    // Set up getOrg behavior for specific org/alias lookups
+    orgManagerStub.getOrg.callsFake(async (identifier: string) => {
+      if (identifier === 'test-org' || identifier === 'test-alias') {
+        return {
+          accessToken: 'test-token',
+          alias: identifier === 'test-alias' ? 'test-alias' : undefined,
+          orgId: 'test-org-id',
+        }
+      }
+
+      return null
+    })
+
     // Stub createConnection
     const mockConnection = new ScConnection('https://api.solace.cloud', 'test-token')
     orgManagerStub.createConnection.resolves(mockConnection)
@@ -120,6 +133,27 @@ describe('platform:env:update', () => {
     const {stdout} = await runCommand(`platform:env:update --env-id=id${envName} --description="${envDescription}"`)
 
     // Assert
+    expect(scConnUpdateStub.getCall(0).calledWith(`/platform/environments/id${envName}`, expectBody)).to.be.true
+    expect(stdout).to.contain(printObjectAsKeyValueTable(expectResponse.data as unknown as Record<string, unknown>))
+  })
+
+  it(`runs platform:env:update --alias=test-alias --env-id=id${envName} --isDefault`, async () => {
+    // Arrange
+    const expectBody = {
+      isDefault: true,
+    }
+    const expectResponse: EnvironmentApiResponse = {
+      data: anEnv(envName, true, false),
+    }
+
+    scConnUpdateStub.returns(Promise.resolve(expectResponse))
+
+    // Act
+    const {stdout} = await runCommand(`platform:env:update --alias=test-alias --env-id=id${envName} --isDefault`)
+
+    // Assert
+    expect(orgManagerStub.getOrg.calledWith('test-alias')).to.be.true
+    expect(orgManagerStub.createConnection.calledWith('test-alias')).to.be.true
     expect(scConnUpdateStub.getCall(0).calledWith(`/platform/environments/id${envName}`, expectBody)).to.be.true
     expect(stdout).to.contain(printObjectAsKeyValueTable(expectResponse.data as unknown as Record<string, unknown>))
   })

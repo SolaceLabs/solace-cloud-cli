@@ -27,6 +27,19 @@ describe('platform:env:delete', () => {
       orgId: 'default-org',
     })
 
+    // Set up getOrg behavior for specific org/alias lookups
+    orgManagerStub.getOrg.callsFake(async (identifier: string) => {
+      if (identifier === 'test-org' || identifier === 'test-alias') {
+        return {
+          accessToken: 'test-token',
+          alias: identifier === 'test-alias' ? 'test-alias' : undefined,
+          orgId: 'test-org-id',
+        }
+      }
+
+      return null
+    })
+
     // Stub createConnection
     const mockConnection = new ScConnection('https://api.solace.cloud', 'test-token')
     orgManagerStub.createConnection.resolves(mockConnection)
@@ -86,6 +99,36 @@ describe('platform:env:delete', () => {
     const {stdout} = await runCommand(`platform:env:delete --env-id id${envName}`)
 
     // Assert
+    expect(scConnDeleteStub.getCall(0).calledWith(`/platform/environments/id${envName}`)).to.be.true
+    expect(stdout).to.contain(deleteSuccessMsg)
+  })
+
+  it(`runs platform:env:delete --alias=test-alias --name ${envName}`, async () => {
+    // Arrange
+    const envs = {
+      data: [anEnv(envName, true, false)],
+      meta: {
+        pagination: {
+          count: 1,
+          nextPage: null,
+          pageNumber: 1,
+          pageSize: 10,
+          totalPages: 1,
+        },
+      },
+    }
+
+    const deleteSuccessMsg = `Environment with id 'id${envName}' has been deleted successfully.`
+    scConnGetStub.returns(Promise.resolve(envs))
+    scConnDeleteStub.returns(deleteSuccessMsg)
+
+    // Act
+    const {stdout} = await runCommand(`platform:env:delete --alias=test-alias --name ${envName}`)
+
+    // Assert
+    expect(orgManagerStub.getOrg.calledWith('test-alias')).to.be.true
+    expect(orgManagerStub.createConnection.calledWith('test-alias')).to.be.true
+    expect(scConnGetStub.getCall(0).args[0]).to.contain(`?name=${envName}`)
     expect(scConnDeleteStub.getCall(0).calledWith(`/platform/environments/id${envName}`)).to.be.true
     expect(stdout).to.contain(deleteSuccessMsg)
   })

@@ -15,8 +15,14 @@ Token Permissions: [ \`services:delete\` **or** \`services:delete:self\` **or** 
     '<%= config.bin %> <%= command.id %> --broker-id=MyBrokerId',
     '<%= config.bin %> <%= command.id %> --name=MyBrokerName',
     '<%= config.bin %> <%= command.id %> --org=my-org --broker-id=MyBrokerId',
+    '<%= config.bin %> <%= command.id %> --alias=my-alias --name=MyBrokerName',
   ]
   static override flags = {
+    alias: Flags.string({
+      char: 'a',
+      description: 'Organization alias to use. If not specified, uses the default organization.',
+      exclusive: ['org'],
+    }),
     'broker-id': Flags.string({
       char: 'b',
       description: 'Id of the event broker service.',
@@ -29,7 +35,8 @@ Token Permissions: [ \`services:delete\` **or** \`services:delete:self\` **or** 
     }),
     org: Flags.string({
       char: 'o',
-      description: 'Organization ID or alias to use. If not specified, uses the default organization.',
+      description: 'Organization ID to use. If not specified, uses the default organization or alias if specified.',
+      exclusive: ['alias'],
     }),
   }
 
@@ -39,7 +46,7 @@ Token Permissions: [ \`services:delete\` **or** \`services:delete:self\` **or** 
     const name = flags.name ?? ''
     const brokerId = flags['broker-id'] ?? ''
 
-    const conn = await resolveOrgConnection(this, flags.org)
+    const conn = await resolveOrgConnection(this, flags.org ?? flags.alias)
 
     // API url
     let apiUrl: string = `/missionControl/eventBrokerServices`

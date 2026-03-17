@@ -29,6 +29,19 @@ describe('missionctrl:broker:delete', () => {
       orgId: 'default-org',
     })
 
+    // Set up getOrg behavior for specific org/alias lookups
+    orgManagerStub.getOrg.callsFake(async (identifier: string) => {
+      if (identifier === 'test-org' || identifier === 'test-alias') {
+        return {
+          accessToken: 'test-token',
+          alias: identifier === 'test-alias' ? 'test-alias' : undefined,
+          orgId: 'test-org-id',
+        }
+      }
+
+      return null
+    })
+
     // Stub createConnection
     const mockConnection = new ScConnection('https://api.solace.cloud', 'test-token')
     orgManagerStub.createConnection.resolves(mockConnection)
@@ -92,6 +105,27 @@ describe('missionctrl:broker:delete', () => {
 
     // Assert
     expect(scConnGetStub.getCall(0).args[0]).to.contain(`customAttributes=name=="${brokerName}"`)
+    expect(scConnDeleteStub.getCall(0).calledWith(`/missionControl/eventBrokerServices/${brokerId}`)).to.be.true
+    expect(stdout).to.contain(printObjectAsKeyValueTable(expectBrokerOpResponse.data as unknown as Record<string, unknown>))
+  })
+
+  it(`runs missionctrl:broker:delete --alias=test-alias -b ${brokerId}`, async () => {
+    // Arrange
+    const expectBrokerOpResponse: EventBrokerOperationApiResponse = createTestOperationResponse(
+      brokerId,
+      1,
+      'MyTestOperationId',
+      'PENDING',
+    )
+
+    scConnDeleteStub.returns(expectBrokerOpResponse)
+
+    // Act
+    const {stdout} = await runCommand(`missionctrl:broker:delete --alias=test-alias -b ${brokerId}`)
+
+    // Assert
+    expect(orgManagerStub.getOrg.calledWith('test-alias')).to.be.true
+    expect(orgManagerStub.createConnection.calledWith('test-alias')).to.be.true
     expect(scConnDeleteStub.getCall(0).calledWith(`/missionControl/eventBrokerServices/${brokerId}`)).to.be.true
     expect(stdout).to.contain(printObjectAsKeyValueTable(expectBrokerOpResponse.data as unknown as Record<string, unknown>))
   })

@@ -28,6 +28,19 @@ describe('missionctrl:broker:state', () => {
       orgId: 'default-org',
     })
 
+    // Set up getOrg behavior for specific org/alias lookups
+    orgManagerStub.getOrg.callsFake(async (identifier: string) => {
+      if (identifier === 'test-org' || identifier === 'test-alias') {
+        return {
+          accessToken: 'test-token',
+          alias: identifier === 'test-alias' ? 'test-alias' : undefined,
+          orgId: 'test-org-id',
+        }
+      }
+
+      return null
+    })
+
     // Stub createConnection
     const mockConnection = new ScConnection('https://api.solace.cloud', 'test-token')
     orgManagerStub.createConnection.resolves(mockConnection)
@@ -98,6 +111,32 @@ describe('missionctrl:broker:state', () => {
     expect(scConnStub.callCount).to.be.greaterThan(1) // Should make multiple API calls for progress
     expect(scConnStub.getCall(0).args[0]).to.contain(`?customAttributes=name=="${brokerName}"`)
     expect(scConnStub.getCall(1).calledWith(`/missionControl/eventBrokerServices/${brokerId}/brokerState`)).to.be.true
+    expect(stdout).to.contain(printObjectAsKeyValueTable(expectBrokerStateResponse.data))
+  })
+
+  it(`runs missionctrl:broker:state --alias=test-alias --broker-id ${brokerId}`, async () => {
+    // Arrange
+    const expectBrokerStateResponse: EventBrokerRedundancyApiResponse = {
+      data: {
+        id: brokerId,
+        isHighAvailability: true,
+        redundancy: {
+          activeNode: 'PRIMARY',
+          configSync: 'UP',
+          redundancy: 'UP',
+        },
+        type: 'brokerState',
+      },
+    }
+    scConnStub.returns(Promise.resolve(expectBrokerStateResponse))
+
+    // Act
+    const {stdout} = await runCommand(`missionctrl:broker:state --alias=test-alias --broker-id ${brokerId}`)
+
+    // Assert
+    expect(orgManagerStub.getOrg.calledWith('test-alias')).to.be.true
+    expect(orgManagerStub.createConnection.calledWith('test-alias')).to.be.true
+    expect(scConnStub.getCall(0).calledWith(`/missionControl/eventBrokerServices/${brokerId}/brokerState`)).to.be.true
     expect(stdout).to.contain(printObjectAsKeyValueTable(expectBrokerStateResponse.data))
   })
 })

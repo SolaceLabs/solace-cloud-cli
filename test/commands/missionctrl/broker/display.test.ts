@@ -28,6 +28,19 @@ describe('missionctrl:broker:display', () => {
       orgId: 'default-org',
     })
 
+    // Set up getOrg behavior for specific org/alias lookups
+    orgManagerStub.getOrg.callsFake(async (identifier: string) => {
+      if (identifier === 'test-org' || identifier === 'test-alias') {
+        return {
+          accessToken: 'test-token',
+          alias: identifier === 'test-alias' ? 'test-alias' : undefined,
+          orgId: 'test-org-id',
+        }
+      }
+
+      return null
+    })
+
     // Stub createConnection
     const mockConnection = new ScConnection('https://api.solace.cloud', 'test-token')
     orgManagerStub.createConnection.resolves(mockConnection)
@@ -78,5 +91,41 @@ describe('missionctrl:broker:display', () => {
     // Assert
     expect(scConnStub.getCall(0).args[0]).to.contain(`?customAttributes=name=="${brokerName}"`)
     expect(stdout).to.contain(printObjectAsKeyValueTable(expectBroker.data[0] as unknown as Record<string, unknown>))
+  })
+
+  it(`runs missionctrl:broker:display --org=test-org -b ${brokerId}`, async () => {
+    // Arrange
+    const expectBroker: EventBrokerApiResponse = {
+      data: aBroker(brokerId, brokerName),
+      meta: {},
+    }
+    scConnStub.returns(Promise.resolve(expectBroker))
+
+    // Act
+    const {stdout} = await runCommand(`missionctrl:broker:display --org=test-org -b ${brokerId}`)
+
+    // Assert
+    expect(orgManagerStub.getOrg.calledWith('test-org')).to.be.true
+    expect(orgManagerStub.createConnection.calledWith('test-org')).to.be.true
+    expect(scConnStub.getCall(0).calledWith(`/missionControl/eventBrokerServices/${brokerId}`)).to.be.true
+    expect(stdout).to.contain(printObjectAsKeyValueTable(expectBroker.data as unknown as Record<string, unknown>))
+  })
+
+  it(`runs missionctrl:broker:display --alias=test-alias -b ${brokerId}`, async () => {
+    // Arrange
+    const expectBroker: EventBrokerApiResponse = {
+      data: aBroker(brokerId, brokerName),
+      meta: {},
+    }
+    scConnStub.returns(Promise.resolve(expectBroker))
+
+    // Act
+    const {stdout} = await runCommand(`missionctrl:broker:display --alias=test-alias -b ${brokerId}`)
+
+    // Assert
+    expect(orgManagerStub.getOrg.calledWith('test-alias')).to.be.true
+    expect(orgManagerStub.createConnection.calledWith('test-alias')).to.be.true
+    expect(scConnStub.getCall(0).calledWith(`/missionControl/eventBrokerServices/${brokerId}`)).to.be.true
+    expect(stdout).to.contain(printObjectAsKeyValueTable(expectBroker.data as unknown as Record<string, unknown>))
   })
 })

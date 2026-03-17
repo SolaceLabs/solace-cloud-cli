@@ -30,6 +30,19 @@ describe('missionctrl:broker:update', () => {
       orgId: 'default-org',
     })
 
+    // Set up getOrg behavior for specific org/alias lookups
+    orgManagerStub.getOrg.callsFake(async (identifier: string) => {
+      if (identifier === 'test-org' || identifier === 'test-alias') {
+        return {
+          accessToken: 'test-token',
+          alias: identifier === 'test-alias' ? 'test-alias' : undefined,
+          orgId: 'test-org-id',
+        }
+      }
+
+      return null
+    })
+
     // Stub createConnection
     const mockConnection = new ScConnection('https://api.solace.cloud', 'test-token')
     orgManagerStub.createConnection.resolves(mockConnection)
@@ -99,6 +112,32 @@ describe('missionctrl:broker:update', () => {
 
     // Assert
     expect(scGetConnStub.getCall(0).args[0]).to.contain(`?customAttributes=name=="${brokerName}"`)
+    expect(scPatchConnStub.getCall(0).calledWith(`/missionControl/eventBrokerServices/${brokerId}`, expectBody)).to.be
+      .true
+    expect(stdout).to.contain(
+      printObjectAsKeyValueTable(updatedBrokerOpResponse.data as unknown as Record<string, unknown>),
+    )
+  })
+
+  it(`runs missionctrl:broker:update --alias=test-alias -b ${brokerId} -l true`, async () => {
+    // Arrange
+    const expectBody = {
+      locked: true,
+    }
+    const updatedBrokerOpResponse: EventBrokerOperationApiResponse = createTestOperationResponse(
+      brokerId,
+      1,
+      'MyTestOperationId',
+      'SUCCEEDED',
+    )
+    scPatchConnStub.returns(Promise.resolve(updatedBrokerOpResponse))
+
+    // Act
+    const {stdout} = await runCommand(`missionctrl:broker:update --alias=test-alias -b ${brokerId} -l true`)
+
+    // Assert
+    expect(orgManagerStub.getOrg.calledWith('test-alias')).to.be.true
+    expect(orgManagerStub.createConnection.calledWith('test-alias')).to.be.true
     expect(scPatchConnStub.getCall(0).calledWith(`/missionControl/eventBrokerServices/${brokerId}`, expectBody)).to.be
       .true
     expect(stdout).to.contain(

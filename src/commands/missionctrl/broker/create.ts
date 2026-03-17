@@ -14,8 +14,14 @@ Token Permissions: [ \`services:post\` ]`
   static override examples = [
     '<%= config.bin %> <%= command.id %> --name=MyBrokerName --datacenter-id=eks-ca-central-1a --service-class-id=DEVELOPER',
     '<%= config.bin %> <%= command.id %> --org=my-org --name=MyBrokerName --datacenter-id=eks-ca-central-1a --service-class-id=DEVELOPER',
+    '<%= config.bin %> <%= command.id %> --alias=my-alias --name=MyBrokerName --datacenter-id=eks-ca-central-1a --service-class-id=DEVELOPER',
   ]
   static override flags = {
+    alias: Flags.string({
+      char: 'a',
+      description: 'Organization alias to use. If not specified, uses the default organization.',
+      exclusive: ['org'],
+    }),
     'datacenter-id': Flags.string({
       char: 'd',
       description: 'The identifier of the datacenter.',
@@ -50,7 +56,8 @@ Token Permissions: [ \`services:post\` ]`
     }),
     org: Flags.string({
       char: 'o',
-      description: 'Organization ID or alias to use. If not specified, uses the default organization.',
+      description: 'Organization ID to use. If not specified, uses the default organization or alias if specified.',
+      exclusive: ['alias'],
     }),
     'redundancy-group-ssl-enabled': Flags.boolean({
       char: 'r',
@@ -83,7 +90,7 @@ Token Permissions: [ \`services:post\` ]`
     const eventBrokerVersion = flags.version ?? ''
     let envId: string = ''
 
-    const conn = await resolveOrgConnection(this, flags.org)
+    const conn = await resolveOrgConnection(this, flags.org ?? flags.alias)
 
     // API url
     const apiUrl: string = `/missionControl/eventBrokerServices`

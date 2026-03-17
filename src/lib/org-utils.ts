@@ -41,9 +41,7 @@ export async function resolveOrgConnection(
         )
       }
 
-      // Use alias if available, otherwise use orgId
-      const connectionIdentifier = org.alias || org.orgId
-      return await orgManager.createConnection(connectionIdentifier, timeout)
+      return await orgManager.createConnection(orgIdentifier, timeout)
     }
 
     // No org specified, try default
@@ -63,9 +61,7 @@ export async function resolveOrgConnection(
       }
     }
 
-    // Use alias if available, otherwise use orgId
-    const connectionIdentifier = defaultOrg.alias || defaultOrg.orgId
-    return await orgManager.createConnection(connectionIdentifier, timeout)
+    return await orgManager.createConnection(defaultOrg.orgId, timeout)
   } catch (error) {
     // Handle OrgManager-specific errors
     if (error instanceof OrgError) {

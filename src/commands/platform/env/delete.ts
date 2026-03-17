@@ -13,8 +13,14 @@ export default class PlatformEnvDelete extends ScCommand<typeof PlatformEnvDelet
     '<%= config.bin %> <%= command.id %> --name=MyEnvName',
     '<%= config.bin %> <%= command.id %> --env-id=MyEnvId',
     '<%= config.bin %> <%= command.id %> --org=my-org --name=MyEnvName',
+    '<%= config.bin %> <%= command.id %> --alias=my-alias --name=MyEnvName',
   ]
   static override flags = {
+    alias: Flags.string({
+      char: 'a',
+      description: 'Organization alias to use. If not specified, uses the default organization.',
+      exclusive: ['org'],
+    }),
     'env-id': Flags.string({
       char: 'e',
       description: 'Id of the environment.',
@@ -27,7 +33,8 @@ export default class PlatformEnvDelete extends ScCommand<typeof PlatformEnvDelet
     }),
     org: Flags.string({
       char: 'o',
-      description: 'Organization ID or alias to use. If not specified, uses the default organization.',
+      description: 'Organization ID to use. If not specified, uses the default organization or alias if specified.',
+      exclusive: ['alias'],
     }),
   }
 
@@ -37,7 +44,7 @@ export default class PlatformEnvDelete extends ScCommand<typeof PlatformEnvDelet
     const name = flags.name ?? ''
     const envId = flags['env-id'] ?? ''
 
-    const conn = await resolveOrgConnection(this, flags.org)
+    const conn = await resolveOrgConnection(this, flags.org ?? flags.alias)
 
     // API url
     let apiUrl: string = `/platform/environments`

@@ -29,6 +29,19 @@ describe('missionctrl:broker:list', () => {
       orgId: 'default-org',
     })
 
+    // Set up getOrg behavior for specific org/alias lookups
+    orgManagerStub.getOrg.callsFake(async (identifier: string) => {
+      if (identifier === 'test-org' || identifier === 'test-alias') {
+        return {
+          accessToken: 'test-token',
+          alias: identifier === 'test-alias' ? 'test-alias' : undefined,
+          orgId: 'test-org-id',
+        }
+      }
+
+      return null
+    })
+
     // Stub createConnection
     const mockConnection = new ScConnection('https://api.solace.cloud', 'test-token')
     orgManagerStub.createConnection.resolves(mockConnection)
@@ -158,6 +171,46 @@ describe('missionctrl:broker:list', () => {
 
     // Assert
     expect(scConnStub.getCall(0).args[0]).to.contain(`customAttributes=name=="${brokerName}"`)
+    expect(stdout).to.contain(renderTable(expectBrokerArray))
+  })
+
+  it('runs missionctrl:broker:list --alias=test-alias', async () => {
+    // Arrange
+    const expectBrokerResponse: EventBrokerListApiResponse = {
+      data: [aBroker('BrokerId1', 'Broker1')],
+      meta: {
+        pagination: {
+          count: 1,
+          nextPage: null,
+          pageNumber: 1,
+          pageSize: 10,
+          totalPages: 1,
+        },
+      },
+    }
+    scConnStub.returns(Promise.resolve(expectBrokerResponse))
+
+    // Expected
+    const expectBrokerArray = [
+      ['Name', 'Id', 'Type', 'Version', 'Owned By', 'Datacenter Id', 'Service Class Id'],
+      ...expectBrokerResponse.data.map((item: EventBrokerServiceDetail) => [
+        item.name,
+        item.id,
+        item.type,
+        item.eventBrokerServiceVersion,
+        item.ownedBy,
+        item.datacenterId,
+        item.serviceClassId,
+      ]),
+    ]
+
+    // Act
+    const {stdout} = await runCommand('missionctrl:broker:list --alias=test-alias')
+
+    // Assert
+    expect(orgManagerStub.getOrg.calledWith('test-alias')).to.be.true
+    expect(orgManagerStub.createConnection.calledWith('test-alias')).to.be.true
+    expect(scConnStub.getCall(0).calledWith(`/missionControl/eventBrokerServices?pageSize=${defaultPageSize}&pageNumber=${defaultPageNumber}`)).to.be.true
     expect(stdout).to.contain(renderTable(expectBrokerArray))
   })
 })

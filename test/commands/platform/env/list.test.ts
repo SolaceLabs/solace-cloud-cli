@@ -29,6 +29,19 @@ describe('platform:env:list', () => {
       orgId: 'default-org',
     })
 
+    // Set up getOrg behavior for specific org/alias lookups
+    orgManagerStub.getOrg.callsFake(async (identifier: string) => {
+      if (identifier === 'test-org' || identifier === 'test-alias' || identifier === 'my-org') {
+        return {
+          accessToken: 'test-token',
+          alias: identifier === 'test-alias' ? 'test-alias' : undefined,
+          orgId: identifier === 'my-org' ? 'my-org' : 'test-org-id',
+        }
+      }
+
+      return null
+    })
+
     // Stub createConnection to return a mock ScConnection
     const mockConnection = new ScConnection('https://api.solace.cloud', 'test-token')
     orgManagerStub.createConnection.resolves(mockConnection)
@@ -144,6 +157,31 @@ describe('platform:env:list', () => {
     // Assert
     expect(orgManagerStub.getOrg.calledWith('my-org')).to.be.true
     expect(orgManagerStub.createConnection.calledWith('my-org')).to.be.true
+    expect(orgManagerStub.getDefaultOrg.called).to.be.false
+  })
+
+  it('uses specified alias when --alias provided', async () => {
+    // Arrange
+    const envs = {
+      data: [anEnv('Test', false, false)],
+      meta: {
+        pagination: {
+          count: 1,
+          nextPage: null,
+          pageNumber: 1,
+          pageSize: 10,
+          totalPages: 1,
+        },
+      },
+    }
+    scConnStub.returns(Promise.resolve(envs))
+
+    // Act
+    await runCommand('platform:env:list --alias=test-alias')
+
+    // Assert
+    expect(orgManagerStub.getOrg.calledWith('test-alias')).to.be.true
+    expect(orgManagerStub.createConnection.calledWith('test-alias')).to.be.true
     expect(orgManagerStub.getDefaultOrg.called).to.be.false
   })
 

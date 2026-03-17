@@ -30,28 +30,30 @@ describe('account:list', () => {
         alias: 'production',
         apiVersion: 'v2',
         baseUrl: 'https://api.solace.cloud',
+        isDefault: true,
         orgId: 'org-123',
       },
       {
         accessToken: 'token-2',
         baseUrl: 'https://api.solace.cloud',
+        isDefault: false,
         orgId: 'org-456',
       },
       {
         accessToken: 'token-3',
         alias: 'dev',
         baseUrl: 'https://custom.solace.cloud',
+        isDefault: false,
         orgId: 'org-789',
       },
     ]
     orgManagerStub.getAllOrgs.resolves(orgs)
-    orgManagerStub.getDefaultOrg.resolves(orgs[0])
 
     const orgArray = [
       ['Org ID', 'Alias', 'Base URL', 'API Version', 'Is Default'],
       ['org-123', 'production', 'https://api.solace.cloud', 'v2', 'Yes'],
-      ['org-456', '', 'https://api.solace.cloud', '', 'No'],
-      ['org-789', 'dev', 'https://custom.solace.cloud', '', 'No'],
+      ['org-456', '', 'https://api.solace.cloud', '', ''],
+      ['org-789', 'dev', 'https://custom.solace.cloud', '', ''],
     ]
 
     // Act
@@ -59,7 +61,6 @@ describe('account:list', () => {
 
     // Assert
     expect(orgManagerStub.getAllOrgs.calledOnce).to.be.true
-    expect(orgManagerStub.getDefaultOrg.calledOnce).to.be.true
     expect(stdout).to.contain(renderTable(orgArray))
   })
 
@@ -69,16 +70,17 @@ describe('account:list', () => {
       {
         accessToken: 'token-1',
         baseUrl: 'https://api.solace.cloud',
+        isDefault: true,
         orgId: 'org-default',
       },
       {
         accessToken: 'token-2',
         baseUrl: 'https://api.solace.cloud',
+        isDefault: false,
         orgId: 'org-other',
       },
     ]
     orgManagerStub.getAllOrgs.resolves(orgs)
-    orgManagerStub.getDefaultOrg.resolves(orgs[0])
 
     // Act
     const {stdout} = await runCommand('account:list')
@@ -87,7 +89,7 @@ describe('account:list', () => {
     const orgArray = [
       ['Org ID', 'Alias', 'Base URL', 'API Version', 'Is Default'],
       ['org-default', '', 'https://api.solace.cloud', '', 'Yes'],
-      ['org-other', '', 'https://api.solace.cloud', '', 'No'],
+      ['org-other', '', 'https://api.solace.cloud', '', ''],
     ]
     expect(stdout).to.contain(renderTable(orgArray))
   })
@@ -98,11 +100,11 @@ describe('account:list', () => {
       {
         accessToken: 'token-1',
         baseUrl: 'https://api.solace.cloud',
+        isDefault: false,
         orgId: 'org-123',
       },
     ]
     orgManagerStub.getAllOrgs.resolves(orgs)
-    orgManagerStub.getDefaultOrg.resolves(null)
 
     // Act
     const {stdout} = await runCommand('account:list')
@@ -110,7 +112,7 @@ describe('account:list', () => {
     // Assert
     const orgArray = [
       ['Org ID', 'Alias', 'Base URL', 'API Version', 'Is Default'],
-      ['org-123', '', 'https://api.solace.cloud', '', 'No'],
+      ['org-123', '', 'https://api.solace.cloud', '', ''],
     ]
     expect(stdout).to.contain(renderTable(orgArray))
   })
@@ -135,21 +137,22 @@ describe('account:list', () => {
         accessToken: 'token-1',
         alias: 'prod',
         baseUrl: 'https://api.solace.cloud',
+        isDefault: false,
         orgId: 'org-with-alias',
       },
       {
         accessToken: 'token-2',
         baseUrl: 'https://api.solace.cloud',
+        isDefault: false,
         orgId: 'org-without-alias',
       },
     ]
     orgManagerStub.getAllOrgs.resolves(orgs)
-    orgManagerStub.getDefaultOrg.resolves(null)
 
     const orgArray = [
       ['Org ID', 'Alias', 'Base URL', 'API Version', 'Is Default'],
-      ['org-with-alias', 'prod', 'https://api.solace.cloud', '', 'No'],
-      ['org-without-alias', '', 'https://api.solace.cloud', '', 'No'],
+      ['org-with-alias', 'prod', 'https://api.solace.cloud', '', ''],
+      ['org-without-alias', '', 'https://api.solace.cloud', '', ''],
     ]
 
     // Act

@@ -36,6 +36,19 @@ describe('missionctrl:broker:opstatus', () => {
       orgId: 'default-org',
     })
 
+    // Set up getOrg behavior for specific org/alias lookups
+    orgManagerStub.getOrg.callsFake(async (identifier: string) => {
+      if (identifier === 'test-org' || identifier === 'test-alias') {
+        return {
+          accessToken: 'test-token',
+          alias: identifier === 'test-alias' ? 'test-alias' : undefined,
+          orgId: 'test-org-id',
+        }
+      }
+
+      return null
+    })
+
     // Stub createConnection
     const mockConnection = new ScConnection('https://api.solace.cloud', 'test-token')
     orgManagerStub.createConnection.resolves(mockConnection)
@@ -207,5 +220,30 @@ describe('missionctrl:broker:opstatus', () => {
       // Restore fake timers
       clock.restore()
     }
+  })
+
+  it(`runs missionctrl:broker:opstatus --alias=test-alias -b ${brokerId}`, async () => {
+    // Arrange
+    const opsResponse = createTestAllOperationsResponse(brokerId, 5, operationId, 'in-progress')
+    scConnStub.returns(Promise.resolve(opsResponse))
+
+    const opStatusArray = [
+      ['Operation Id', 'Operation Type', 'Status', 'Created Time', 'Completed Time'],
+      ...opsResponse.data.map((item: EventBrokerOperationDetail) => [
+        item.id,
+        item.operationType,
+        item.status,
+        item.createdTime,
+        item.completedTime,
+      ]),
+    ]
+
+    // Act
+    const {stdout} = await runCommand(`missionctrl:broker:opstatus --alias=test-alias -b ${brokerId}`)
+
+    // Assert
+    expect(orgManagerStub.getOrg.calledWith('test-alias')).to.be.true
+    expect(orgManagerStub.createConnection.calledWith('test-alias')).to.be.true
+    expect(stdout).to.contain(renderTable(opStatusArray))
   })
 })

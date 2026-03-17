@@ -159,7 +159,7 @@ describe('account:login', () => {
     // Assert
     expect(confirmStub.calledOnce).to.be.true
     expect(orgManagerStub.updateOrg.calledOnce).to.be.true
-    expect(orgManagerStub.updateOrg.calledWith(testOrg, sinon.match({orgId: testOrg, accessToken: testToken}))).to.be.true
+    expect(orgManagerStub.updateOrg.calledWith(testOrg, sinon.match({accessToken: testToken, orgId: testOrg}))).to.be.true
     expect(stdout).to.contain('Successfully updated organization')
 
     // Cleanup
@@ -185,7 +185,7 @@ describe('account:login', () => {
     // Assert
     expect(confirmStub.calledOnce).to.be.true
     expect(orgManagerStub.updateOrg.calledOnce).to.be.true
-    expect(orgManagerStub.updateOrg.calledWith(testAlias, sinon.match({orgId: testOrg, alias: testAlias, accessToken: testToken}))).to.be.true
+    expect(orgManagerStub.updateOrg.calledWith(testAlias, sinon.match({accessToken: testToken, alias: testAlias, orgId: testOrg}))).to.be.true
     expect(stdout).to.contain('Successfully updated organization')
 
     // Cleanup

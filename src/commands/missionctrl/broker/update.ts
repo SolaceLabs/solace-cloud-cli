@@ -16,8 +16,14 @@ export default class MissionctrlBrokerUpdate extends ScCommand<typeof Missionctr
     '<%= config.bin %> <%= command.id %>',
     '<%= config.bin %> <%= command.id %> --broker-id <broker-id> --new-name <new-name>',
     '<%= config.bin %> <%= command.id %> --org=my-org --name <name> --new-name <new-name>',
+    '<%= config.bin %> <%= command.id %> --alias=my-alias --name <name> --new-name <new-name>',
   ]
   static override flags = {
+    alias: Flags.string({
+      char: 'a',
+      description: 'Organization alias to use. If not specified, uses the default organization.',
+      exclusive: ['org'],
+    }),
     'broker-id': Flags.string({
       char: 'b',
       description: 'Id of the event broker service.',
@@ -37,7 +43,8 @@ export default class MissionctrlBrokerUpdate extends ScCommand<typeof Missionctr
     }),
     org: Flags.string({
       char: 'o',
-      description: 'Organization ID or alias to use. If not specified, uses the default organization.',
+      description: 'Organization ID to use. If not specified, uses the default organization or alias if specified.',
+      exclusive: ['alias'],
     }),
   }
 
@@ -56,7 +63,7 @@ export default class MissionctrlBrokerUpdate extends ScCommand<typeof Missionctr
       ...(newName && {name: newName}),
     }
 
-    const conn = await resolveOrgConnection(this, flags.org)
+    const conn = await resolveOrgConnection(this, flags.org ?? flags.alias)
 
     // API url
     let apiUrl = `/missionControl/eventBrokerServices`

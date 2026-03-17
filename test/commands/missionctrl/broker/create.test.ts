@@ -31,6 +31,19 @@ describe('missionctrl:broker:create', () => {
       orgId: 'default-org',
     })
 
+    // Set up getOrg behavior for specific org/alias lookups
+    orgManagerStub.getOrg.callsFake(async (identifier: string) => {
+      if (identifier === 'test-org' || identifier === 'test-alias') {
+        return {
+          accessToken: 'test-token',
+          alias: identifier === 'test-alias' ? 'test-alias' : undefined,
+          orgId: 'test-org-id',
+        }
+      }
+
+      return null
+    })
+
     // Stub createConnection
     const mockConnection = new ScConnection('https://api.solace.cloud', 'test-token')
     orgManagerStub.createConnection.resolves(mockConnection)
@@ -139,6 +152,34 @@ describe('missionctrl:broker:create', () => {
 
     // Assert
     expect(scConnGetStub.getCall(0).args[0]).to.contain(`?name=${envName}`)
+    expect(scConnPostStub.getCall(0).calledWith('/missionControl/eventBrokerServices', expectBody)).to.be.true
+    expect(stdout).to.contain(printObjectAsKeyValueTable(expectResponse.data as unknown as Record<string, unknown>))
+  })
+
+  it(`runs missionctrl:broker:create --alias=test-alias -n ${brokerName} -d ${brokerDC} -c ${brokerSvcClassId}`, async () => {
+    // Arrange
+    const expectBody = {
+      datacenterId: brokerDC,
+      locked: false,
+      name: brokerName,
+      redundancyGroupSslEnabled: false,
+      serviceClassId: brokerSvcClassId,
+    }
+    const expectResponse: EventBrokerOperationApiResponse = {
+      data: aBroker(brokerName, brokerDC),
+      meta: {},
+    }
+
+    scConnPostStub.returns(expectResponse)
+
+    // Act
+    const {stdout} = await runCommand(
+      `missionctrl:broker:create --alias=test-alias -n ${brokerName} -d ${brokerDC} -c ${brokerSvcClassId}`,
+    )
+
+    // Assert
+    expect(orgManagerStub.getOrg.calledWith('test-alias')).to.be.true
+    expect(orgManagerStub.createConnection.calledWith('test-alias')).to.be.true
     expect(scConnPostStub.getCall(0).calledWith('/missionControl/eventBrokerServices', expectBody)).to.be.true
     expect(stdout).to.contain(printObjectAsKeyValueTable(expectResponse.data as unknown as Record<string, unknown>))
   })

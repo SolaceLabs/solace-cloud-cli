@@ -15,8 +15,14 @@ export default class PlatformEnvDisplay extends ScCommand<typeof PlatformEnvDisp
     '<%= config.bin %> <%= command.id %> --name=MyEnvName',
     '<%= config.bin %> <%= command.id %> --env-id=MyEnvId',
     '<%= config.bin %> <%= command.id %> --org=my-org --env-id=MyEnvId',
+    '<%= config.bin %> <%= command.id %> --alias=my-alias --name=MyEnvName',
   ]
   static override flags = {
+    alias: Flags.string({
+      char: 'a',
+      description: 'Organization alias to use. If not specified, uses the default organization.',
+      exclusive: ['org'],
+    }),
     'env-id': Flags.string({
       char: 'e',
       description: 'Id of the environment.',
@@ -29,7 +35,8 @@ export default class PlatformEnvDisplay extends ScCommand<typeof PlatformEnvDisp
     }),
     org: Flags.string({
       char: 'o',
-      description: 'Organization ID or alias to use. If not specified, uses the default organization.',
+      description: 'Organization ID to use. If not specified, uses the default organization or alias if specified.',
+      exclusive: ['alias'],
     }),
   }
 
@@ -39,7 +46,7 @@ export default class PlatformEnvDisplay extends ScCommand<typeof PlatformEnvDisp
     const name = flags.name ?? ''
     const envId = flags['env-id'] ?? ''
 
-    const conn = await resolveOrgConnection(this, flags.org)
+    const conn = await resolveOrgConnection(this, flags.org ?? flags.alias)
 
     // API url
     // If env name provided, get all environments matching provided name

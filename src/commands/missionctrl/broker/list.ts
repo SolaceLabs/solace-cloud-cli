@@ -14,16 +14,22 @@ Token Permissions: [ \`mission_control:access\` **or** \`services:get\` **or** \
   static override examples = [
     '<%= config.bin %> <%= command.id %>',
     '<%= config.bin %> <%= command.id %> --org=my-org',
-    '<%= config.bin %> <%= command.id %> --name=MyBrokerName --pageNumber=1 --pageSize=10 --sort=name:asc',
+    '<%= config.bin %> <%= command.id %> --alias=my-alias --name=MyBrokerName --pageNumber=1 --pageSize=10 --sort=name:asc',
   ]
   static override flags = {
+    alias: Flags.string({
+      char: 'a',
+      description: 'Organization alias to use. If not specified, uses the default organization.',
+      exclusive: ['org'],
+    }),
     name: Flags.string({
       char: 'n',
       description: 'Name of the event broker service to match on.',
     }),
     org: Flags.string({
       char: 'o',
-      description: 'Organization ID or alias to use. If not specified, uses the default organization.',
+      description: 'Organization ID to use. If not specified, uses the default organization or alias if specified.',
+      exclusive: ['alias'],
     }),
     pageNumber: Flags.integer({
       description: 'The page number to get. Defaults to 1',
@@ -46,7 +52,7 @@ Token Permissions: [ \`mission_control:access\` **or** \`services:get\` **or** \
   public async run(): Promise<EventBrokerListApiResponse> {
     const {flags} = await this.parse(MissionctrlBrokerList)
 
-    const conn = await resolveOrgConnection(this, flags.org)
+    const conn = await resolveOrgConnection(this, flags.org ?? flags.alias)
 
     const pageSize = flags.pageSize ?? 10
     const pageNumber = flags.pageNumber ?? 1

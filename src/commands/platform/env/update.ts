@@ -16,8 +16,14 @@ export default class PlatformEnvUpdate extends ScCommand<typeof PlatformEnvUpdat
     '<%= config.bin %> <%= command.id %> --name=MyEnvName --new-name=MyNewEnvName',
     '<%= config.bin %> <%= command.id %> --env-id=MyEnvId --new-name=MyNewEnvName --description="My description to update" --isDefault',
     '<%= config.bin %> <%= command.id %> --org=my-org --name=MyEnvName --isDefault',
+    '<%= config.bin %> <%= command.id %> --alias=my-alias --name=MyEnvName --new-name=MyNewEnvName',
   ]
   static override flags = {
+    alias: Flags.string({
+      char: 'a',
+      description: 'Organization alias to use. If not specified, uses the default organization.',
+      exclusive: ['org'],
+    }),
     description: Flags.string({
       char: 'd',
       description: 'Description of the environment to update.',
@@ -40,7 +46,8 @@ export default class PlatformEnvUpdate extends ScCommand<typeof PlatformEnvUpdat
     }),
     org: Flags.string({
       char: 'o',
-      description: 'Organization ID or alias to use. If not specified, uses the default organization.',
+      description: 'Organization ID to use. If not specified, uses the default organization or alias if specified.',
+      exclusive: ['alias'],
     }),
   }
 
@@ -59,7 +66,7 @@ export default class PlatformEnvUpdate extends ScCommand<typeof PlatformEnvUpdat
       ...(newName && {name: newName}),
     }
 
-    const conn = await resolveOrgConnection(this, flags.org)
+    const conn = await resolveOrgConnection(this, flags.org ?? flags.alias)
 
     // API url
     let apiUrl: string = `/platform/environments`

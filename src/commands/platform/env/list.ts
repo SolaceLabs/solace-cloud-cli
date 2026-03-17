@@ -12,16 +12,22 @@ export default class PlatformEnvList extends ScCommand<typeof PlatformEnvList> {
   static override examples = [
     '<%= config.bin %> <%= command.id %>',
     '<%= config.bin %> <%= command.id %> --org=my-org',
-    '<%= config.bin %> <%= command.id %> --name=Default --pageNumber=1 --pageSize=10 --sort=name:ASC',
+    '<%= config.bin %> <%= command.id %> --alias=my-alias --name=Default --pageNumber=1 --pageSize=10 --sort=name:ASC',
   ]
   static override flags = {
+    alias: Flags.string({
+      char: 'a',
+      description: 'Organization alias to use. If not specified, uses the default organization.',
+      exclusive: ['org'],
+    }),
     name: Flags.string({
       char: 'n',
       description: 'Name of the environment to match on.',
     }),
     org: Flags.string({
       char: 'o',
-      description: 'Organization ID or alias to use. If not specified, uses the default organization.',
+      description: 'Organization ID to use. If not specified, uses the default organization or alias if specified.',
+      exclusive: ['alias'],
     }),
     pageNumber: Flags.integer({
       char: 'p',
@@ -41,7 +47,7 @@ export default class PlatformEnvList extends ScCommand<typeof PlatformEnvList> {
   public async run(): Promise<EnvironmentListApiResponse> {
     const {flags} = await this.parse(PlatformEnvList)
 
-    const conn = await resolveOrgConnection(this, flags.org)
+    const conn = await resolveOrgConnection(this, flags.org ?? flags.alias)
 
     const pageSize = flags.pageSize ?? 10
     const pageNumber = flags.pageNumber ?? 1
