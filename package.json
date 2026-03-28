@@ -78,7 +78,7 @@
       "@oclif/plugin-version",
       "@oclif/plugin-warn-if-update-available",
       "@oclif/plugin-which",
-      "@dishantlangayan/sc-plugin-queue"
+      "@dishantlangayan/sc-plugin-broker"
     ],
     "topicSeparator": " "
   },
