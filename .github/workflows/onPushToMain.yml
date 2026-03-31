@@ -34,10 +34,6 @@ jobs:
       - name: Setup git
         if: ${{ steps.version-check.outputs.skipped == 'false' }}
         run: |
-          sudo apt-get update
-          sudo apt-get install -y git-core
-          git --version
-          echo "Path is ... $PATH"
           git config --global user.email ${{ secrets.GH_EMAIL }}
           git config --global user.name ${{ secrets.GH_USERNAME }}
       - name: Generate oclif README
