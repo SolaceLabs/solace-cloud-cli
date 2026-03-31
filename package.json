@@ -6,7 +6,7 @@
   "bin": {
     "sc": "./bin/run.js"
   },
-  "bugs": "https://github.com/dishantlangayan/solace-cloud-cli/issues",
+  "bugs": "https://github.com/SolaceLabs/solace-cloud-cli/issues",
   "dependencies": {
     "@dishantlangayan/sc-cli-core": "^0.5.1",
     "@inquirer/prompts": "^8.3.0",
@@ -53,7 +53,7 @@
     "./dist",
     "./oclif.manifest.json"
   ],
-  "homepage": "https://github.com/dishantlangayan/solace-cloud-cli",
+  "homepage": "https://github.com/SolaceLabs/solace-cloud-cli",
   "keywords": [
     "oclif",
     "solace",
@@ -82,7 +82,7 @@
     ],
     "topicSeparator": " "
   },
-  "repository": "dishantlangayan/solace-cloud-cli",
+  "repository": "SolaceLabs/solace-cloud-cli",
   "scripts": {
     "build": "shx rm -rf dist && tsc -b",
     "lint": "eslint",
