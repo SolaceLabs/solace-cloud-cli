@@ -9,6 +9,7 @@
   "bugs": "https://github.com/SolaceLabs/solace-cloud-cli/issues",
   "dependencies": {
     "@dishantlangayan/sc-cli-core": "^0.5.1",
+    "@dishantlangayan/sc-plugin-broker": "^0.4.0",
     "@inquirer/prompts": "^8.3.0",
     "@oclif/core": "^4",
     "@oclif/plugin-autocomplete": "^3.2.40",
