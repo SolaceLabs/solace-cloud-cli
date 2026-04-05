@@ -47,18 +47,15 @@ USAGE
 ...
 ```
 <!-- usagestop -->
-# Configuration
+# Authenticating with Solace Cloud
 <!-- configuration -->
-To use any commands you will need to configure an Access Token in Solace Cloud Console with the appropriate permissions first. The access token can be set using the follow Environment Variable:
+To use any commands you will need to configure an Access Token in Solace Cloud Console with the appropriate permissions first. You can then authorize the CLI to use your Solace Cloud by setting the access token using the `account:login` command:
 
+```bash
+sc account login --org <Your Org Name>
 ```
-SC_ACCESS_TOKEN=<Your access token>
-```
 
-The following Environment variables are optional:
-
-* SC_API_VERSION  - The API version of the Solace Cloud REST API. Default is `v2`.
-* SC_BASE_URL     - The location of your Solace Home Cloud account determines the base URL you use. Default is `https://api.solace.cloud/`
+Refer to the [Solace Cloud CLI documention](https://dishantlangayan.github.io/sc-cli/docs/getting-started/sc-authentication) for more information.
 
 <!-- configurationstop -->
 # Resources
@@ -66,6 +63,7 @@ The following Environment variables are optional:
 This is not an officially supported Solace product.
 
 For more information try these resources:
+- Solace Cloud CLI [Documentation](https://dishantlangayan.github.io/sc-cli/docs/intro)
 - Ask the [Solace Community](https://solace.community)
 - The Solace Developer Portal website at: https://solace.dev
 
