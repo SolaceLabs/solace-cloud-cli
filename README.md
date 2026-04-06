@@ -43,7 +43,7 @@ $ npm install -g @dishantlangayan/solace-cloud-cli
 $ sc COMMAND
 running command...
 $ sc (--version)
-@dishantlangayan/solace-cloud-cli/0.5.1 linux-x64 node-v22.22.2
+@dishantlangayan/solace-cloud-cli/0.5.2 darwin-arm64 node-v24.1.0
 $ sc --help [COMMAND]
 USAGE
   $ sc COMMAND
@@ -176,7 +176,7 @@ EXAMPLES
   $ sc account list
 ```
 
-_See code: [src/commands/account/list.ts](https://github.com/SolaceLabs/solace-cloud-cli/blob/v0.5.1/src/commands/account/list.ts)_
+_See code: [src/commands/account/list.ts](https://github.com/SolaceLabs/solace-cloud-cli/blob/v0.5.2/src/commands/account/list.ts)_
 
 ## `sc account login`
 
@@ -226,7 +226,7 @@ EXAMPLES
   $ sc account login --org=my-org-id --base-url=https://api.custom.solace.cloud
 ```
 
-_See code: [src/commands/account/login.ts](https://github.com/SolaceLabs/solace-cloud-cli/blob/v0.5.1/src/commands/account/login.ts)_
+_See code: [src/commands/account/login.ts](https://github.com/SolaceLabs/solace-cloud-cli/blob/v0.5.2/src/commands/account/login.ts)_
 
 ## `sc account logout`
 
@@ -264,7 +264,7 @@ EXAMPLES
   $ sc account logout --org=my-org-id --no-prompt
 ```
 
-_See code: [src/commands/account/logout.ts](https://github.com/SolaceLabs/solace-cloud-cli/blob/v0.5.1/src/commands/account/logout.ts)_
+_See code: [src/commands/account/logout.ts](https://github.com/SolaceLabs/solace-cloud-cli/blob/v0.5.2/src/commands/account/logout.ts)_
 
 ## `sc autocomplete [SHELL]`
 
@@ -1828,7 +1828,7 @@ EXAMPLES
   $ sc missionctrl broker create --alias=my-alias --name=MyBrokerName --datacenter-id=eks-ca-central-1a --service-class-id=DEVELOPER
 ```
 
-_See code: [src/commands/missionctrl/broker/create.ts](https://github.com/SolaceLabs/solace-cloud-cli/blob/v0.5.1/src/commands/missionctrl/broker/create.ts)_
+_See code: [src/commands/missionctrl/broker/create.ts](https://github.com/SolaceLabs/solace-cloud-cli/blob/v0.5.2/src/commands/missionctrl/broker/create.ts)_
 
 ## `sc missionctrl broker delete`
 
@@ -1871,7 +1871,7 @@ EXAMPLES
   $ sc missionctrl broker delete --broker-id=MyBrokerId --no-prompt
 ```
 
-_See code: [src/commands/missionctrl/broker/delete.ts](https://github.com/SolaceLabs/solace-cloud-cli/blob/v0.5.1/src/commands/missionctrl/broker/delete.ts)_
+_See code: [src/commands/missionctrl/broker/delete.ts](https://github.com/SolaceLabs/solace-cloud-cli/blob/v0.5.2/src/commands/missionctrl/broker/delete.ts)_
 
 ## `sc missionctrl broker display`
 
@@ -1910,7 +1910,7 @@ EXAMPLES
   $ sc missionctrl broker display --alias=my-alias --name=MyBrokerName
 ```
 
-_See code: [src/commands/missionctrl/broker/display.ts](https://github.com/SolaceLabs/solace-cloud-cli/blob/v0.5.1/src/commands/missionctrl/broker/display.ts)_
+_See code: [src/commands/missionctrl/broker/display.ts](https://github.com/SolaceLabs/solace-cloud-cli/blob/v0.5.2/src/commands/missionctrl/broker/display.ts)_
 
 ## `sc missionctrl broker list`
 
@@ -1966,7 +1966,7 @@ EXAMPLES
   $ sc missionctrl broker list --alias=my-alias --name=MyBrokerName --pageNumber=1 --pageSize=10 --sort=name:asc
 ```
 
-_See code: [src/commands/missionctrl/broker/list.ts](https://github.com/SolaceLabs/solace-cloud-cli/blob/v0.5.1/src/commands/missionctrl/broker/list.ts)_
+_See code: [src/commands/missionctrl/broker/list.ts](https://github.com/SolaceLabs/solace-cloud-cli/blob/v0.5.2/src/commands/missionctrl/broker/list.ts)_
 
 ## `sc missionctrl broker opstatus`
 
@@ -2010,7 +2010,7 @@ EXAMPLES
   $ sc missionctrl broker opstatus --alias=my-alias -b <broker-id>
 ```
 
-_See code: [src/commands/missionctrl/broker/opstatus.ts](https://github.com/SolaceLabs/solace-cloud-cli/blob/v0.5.1/src/commands/missionctrl/broker/opstatus.ts)_
+_See code: [src/commands/missionctrl/broker/opstatus.ts](https://github.com/SolaceLabs/solace-cloud-cli/blob/v0.5.2/src/commands/missionctrl/broker/opstatus.ts)_
 
 ## `sc missionctrl broker state`
 
@@ -2052,7 +2052,7 @@ EXAMPLES
   $ sc missionctrl broker state --alias=my-alias --name=MyBrokerName
 ```
 
-_See code: [src/commands/missionctrl/broker/state.ts](https://github.com/SolaceLabs/solace-cloud-cli/blob/v0.5.1/src/commands/missionctrl/broker/state.ts)_
+_See code: [src/commands/missionctrl/broker/state.ts](https://github.com/SolaceLabs/solace-cloud-cli/blob/v0.5.2/src/commands/missionctrl/broker/state.ts)_
 
 ## `sc missionctrl broker update`
 
@@ -2097,7 +2097,7 @@ EXAMPLES
   $ sc missionctrl broker update --alias=my-alias --name <name> --new-name <new-name>
 ```
 
-_See code: [src/commands/missionctrl/broker/update.ts](https://github.com/SolaceLabs/solace-cloud-cli/blob/v0.5.1/src/commands/missionctrl/broker/update.ts)_
+_See code: [src/commands/missionctrl/broker/update.ts](https://github.com/SolaceLabs/solace-cloud-cli/blob/v0.5.2/src/commands/missionctrl/broker/update.ts)_
 
 ## `sc platform env create`
 
@@ -2138,7 +2138,7 @@ EXAMPLES
   $ sc platform env create --alias=my-alias --name=MyEnvironment --isDefault
 ```
 
-_See code: [src/commands/platform/env/create.ts](https://github.com/SolaceLabs/solace-cloud-cli/blob/v0.5.1/src/commands/platform/env/create.ts)_
+_See code: [src/commands/platform/env/create.ts](https://github.com/SolaceLabs/solace-cloud-cli/blob/v0.5.2/src/commands/platform/env/create.ts)_
 
 ## `sc platform env delete`
 
@@ -2178,7 +2178,7 @@ EXAMPLES
   $ sc platform env delete --env-id=MyEnvId --no-prompt
 ```
 
-_See code: [src/commands/platform/env/delete.ts](https://github.com/SolaceLabs/solace-cloud-cli/blob/v0.5.1/src/commands/platform/env/delete.ts)_
+_See code: [src/commands/platform/env/delete.ts](https://github.com/SolaceLabs/solace-cloud-cli/blob/v0.5.2/src/commands/platform/env/delete.ts)_
 
 ## `sc platform env display`
 
@@ -2217,7 +2217,7 @@ EXAMPLES
   $ sc platform env display --alias=my-alias --name=MyEnvName
 ```
 
-_See code: [src/commands/platform/env/display.ts](https://github.com/SolaceLabs/solace-cloud-cli/blob/v0.5.1/src/commands/platform/env/display.ts)_
+_See code: [src/commands/platform/env/display.ts](https://github.com/SolaceLabs/solace-cloud-cli/blob/v0.5.2/src/commands/platform/env/display.ts)_
 
 ## `sc platform env list`
 
@@ -2255,7 +2255,7 @@ EXAMPLES
   $ sc platform env list --alias=my-alias --name=Default --pageNumber=1 --pageSize=10 --sort=name:ASC
 ```
 
-_See code: [src/commands/platform/env/list.ts](https://github.com/SolaceLabs/solace-cloud-cli/blob/v0.5.1/src/commands/platform/env/list.ts)_
+_See code: [src/commands/platform/env/list.ts](https://github.com/SolaceLabs/solace-cloud-cli/blob/v0.5.2/src/commands/platform/env/list.ts)_
 
 ## `sc platform env update`
 
@@ -2299,7 +2299,7 @@ EXAMPLES
   $ sc platform env update --alias=my-alias --name=MyEnvName --new-name=MyNewEnvName
 ```
 
-_See code: [src/commands/platform/env/update.ts](https://github.com/SolaceLabs/solace-cloud-cli/blob/v0.5.1/src/commands/platform/env/update.ts)_
+_See code: [src/commands/platform/env/update.ts](https://github.com/SolaceLabs/solace-cloud-cli/blob/v0.5.2/src/commands/platform/env/update.ts)_
 
 ## `sc plugins`
 
