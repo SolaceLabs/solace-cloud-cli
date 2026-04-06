@@ -32,6 +32,9 @@ Use it to:
 
 The CLI is built using the [oclif framework](https://oclif.io) that allows for plugin based development where users can add and extend the functionality of this CLI. For example, a new command can be added that can create and manage VPN Bridges, which uses the SEMP API to provision the bridges across two Message VPN on the same broker or across two brokers.
 
+> [!TIP]
+> For more information see the Solace Cloud CLI [Documentation](https://dishantlangayan.github.io/sc-cli/)
+
 <!-- overviewstop -->
 # Usage
 <!-- usage -->
