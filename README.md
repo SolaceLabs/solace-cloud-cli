@@ -43,7 +43,7 @@ $ npm install -g @dishantlangayan/solace-cloud-cli
 $ sc COMMAND
 running command...
 $ sc (--version)
-@dishantlangayan/solace-cloud-cli/0.5.1 darwin-arm64 node-v24.1.0
+@dishantlangayan/solace-cloud-cli/0.5.1 linux-x64 node-v22.22.2
 $ sc --help [COMMAND]
 USAGE
   $ sc COMMAND
