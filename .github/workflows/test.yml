@@ -10,7 +10,7 @@ jobs:
       matrix:
         os: ['ubuntu-latest', 'windows-latest']
         # node-version: [lts/-1, lts/*, latest]
-        node-version: [22, 20]
+        node-version: [24, 22]
       fail-fast: false
     runs-on: ${{ matrix.os }}
     steps:

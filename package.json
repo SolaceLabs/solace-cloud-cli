@@ -8,8 +8,8 @@
   },
   "bugs": "https://github.com/SolaceLabs/solace-cloud-cli/issues",
   "dependencies": {
-    "@dishantlangayan/sc-cli-core": "^0.5.1",
-    "@dishantlangayan/sc-plugin-broker": "^0.7.0",
+    "@dishantlangayan/sc-cli-core": "^0.9.0",
+    "@dishantlangayan/sc-plugin-broker": "^0.10.0",
     "@inquirer/prompts": "^8.3.0",
     "@oclif/core": "^4",
     "@oclif/plugin-autocomplete": "^3.2.40",
@@ -33,7 +33,7 @@
     "@oclif/test": "^4",
     "@types/chai": "^4",
     "@types/mocha": "^10",
-    "@types/node": "^18",
+    "@types/node": "^22",
     "@types/sinon": "^17.0.4",
     "chai": "^4",
     "eslint": "^9",
@@ -47,7 +47,7 @@
     "typescript": "^5"
   },
   "engines": {
-    "node": ">=18.0.0"
+    "node": ">=22.0.0"
   },
   "files": [
     "./bin",
