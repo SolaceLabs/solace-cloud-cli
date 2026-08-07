@@ -43,7 +43,7 @@ $ npm install -g @dishantlangayan/solace-cloud-cli
 $ sc COMMAND
 running command...
 $ sc (--version)
-@dishantlangayan/solace-cloud-cli/0.5.3 linux-x64 node-v22.23.1
+@dishantlangayan/solace-cloud-cli/0.6.0 darwin-arm64 node-v24.1.0
 $ sc --help [COMMAND]
 USAGE
   $ sc COMMAND
@@ -186,7 +186,7 @@ EXAMPLES
   $ sc account list
 ```
 
-_See code: [src/commands/account/list.ts](https://github.com/SolaceLabs/solace-cloud-cli/blob/v0.5.3/src/commands/account/list.ts)_
+_See code: [src/commands/account/list.ts](https://github.com/SolaceLabs/solace-cloud-cli/blob/v0.6.0/src/commands/account/list.ts)_
 
 ## `sc account login`
 
@@ -236,7 +236,7 @@ EXAMPLES
   $ sc account login --org=my-org-id --base-url=https://api.custom.solace.cloud
 ```
 
-_See code: [src/commands/account/login.ts](https://github.com/SolaceLabs/solace-cloud-cli/blob/v0.5.3/src/commands/account/login.ts)_
+_See code: [src/commands/account/login.ts](https://github.com/SolaceLabs/solace-cloud-cli/blob/v0.6.0/src/commands/account/login.ts)_
 
 ## `sc account logout`
 
@@ -274,7 +274,7 @@ EXAMPLES
   $ sc account logout --org=my-org-id --no-prompt
 ```
 
-_See code: [src/commands/account/logout.ts](https://github.com/SolaceLabs/solace-cloud-cli/blob/v0.5.3/src/commands/account/logout.ts)_
+_See code: [src/commands/account/logout.ts](https://github.com/SolaceLabs/solace-cloud-cli/blob/v0.6.0/src/commands/account/logout.ts)_
 
 ## `sc autocomplete [SHELL]`
 
@@ -339,7 +339,7 @@ EXAMPLES
   $ sc broker acl-profile client-connect-exceptions create --name=myProfile --address=192.168.1.0/24
 ```
 
-_See code: [@dishantlangayan/sc-plugin-broker](https://github.com/dishantlangayan/sc-plugin-broker/blob/v0.7.0/src/commands/broker/acl-profile/client-connect-exceptions/create.ts)_
+_See code: [@dishantlangayan/sc-plugin-broker](https://github.com/dishantlangayan/sc-plugin-broker/blob/v0.10.0/src/commands/broker/acl-profile/client-connect-exceptions/create.ts)_
 
 ## `sc broker acl-profile client-connect-exceptions delete`
 
@@ -376,7 +376,7 @@ EXAMPLES
   $ sc broker acl-profile client-connect-exceptions delete --name=myProfile --address=10.0.0.0/8 --no-prompt
 ```
 
-_See code: [@dishantlangayan/sc-plugin-broker](https://github.com/dishantlangayan/sc-plugin-broker/blob/v0.7.0/src/commands/broker/acl-profile/client-connect-exceptions/delete.ts)_
+_See code: [@dishantlangayan/sc-plugin-broker](https://github.com/dishantlangayan/sc-plugin-broker/blob/v0.10.0/src/commands/broker/acl-profile/client-connect-exceptions/delete.ts)_
 
 ## `sc broker acl-profile client-connect-exceptions list`
 
@@ -408,7 +408,7 @@ EXAMPLES
   $ sc broker acl-profile client-connect-exceptions list --name=myProfile
 ```
 
-_See code: [@dishantlangayan/sc-plugin-broker](https://github.com/dishantlangayan/sc-plugin-broker/blob/v0.7.0/src/commands/broker/acl-profile/client-connect-exceptions/list.ts)_
+_See code: [@dishantlangayan/sc-plugin-broker](https://github.com/dishantlangayan/sc-plugin-broker/blob/v0.10.0/src/commands/broker/acl-profile/client-connect-exceptions/list.ts)_
 
 ## `sc broker acl-profile create`
 
@@ -462,7 +462,7 @@ EXAMPLES
   $ sc broker acl-profile create --name=myProfile --client-connect-default-action=allow --publish-topic-default-action=disallow --subscribe-topic-default-action=allow
 ```
 
-_See code: [@dishantlangayan/sc-plugin-broker](https://github.com/dishantlangayan/sc-plugin-broker/blob/v0.7.0/src/commands/broker/acl-profile/create.ts)_
+_See code: [@dishantlangayan/sc-plugin-broker](https://github.com/dishantlangayan/sc-plugin-broker/blob/v0.10.0/src/commands/broker/acl-profile/create.ts)_
 
 ## `sc broker acl-profile delete`
 
@@ -499,7 +499,7 @@ EXAMPLES
   $ sc broker acl-profile delete --name=myProfile --no-prompt
 ```
 
-_See code: [@dishantlangayan/sc-plugin-broker](https://github.com/dishantlangayan/sc-plugin-broker/blob/v0.7.0/src/commands/broker/acl-profile/delete.ts)_
+_See code: [@dishantlangayan/sc-plugin-broker](https://github.com/dishantlangayan/sc-plugin-broker/blob/v0.10.0/src/commands/broker/acl-profile/delete.ts)_
 
 ## `sc broker acl-profile display`
 
@@ -531,7 +531,7 @@ EXAMPLES
   $ sc broker acl-profile display --name=myProfile
 ```
 
-_See code: [@dishantlangayan/sc-plugin-broker](https://github.com/dishantlangayan/sc-plugin-broker/blob/v0.7.0/src/commands/broker/acl-profile/display.ts)_
+_See code: [@dishantlangayan/sc-plugin-broker](https://github.com/dishantlangayan/sc-plugin-broker/blob/v0.10.0/src/commands/broker/acl-profile/display.ts)_
 
 ## `sc broker acl-profile list`
 
@@ -574,7 +574,7 @@ EXAMPLES
   $ sc broker acl-profile list --all
 ```
 
-_See code: [@dishantlangayan/sc-plugin-broker](https://github.com/dishantlangayan/sc-plugin-broker/blob/v0.7.0/src/commands/broker/acl-profile/list.ts)_
+_See code: [@dishantlangayan/sc-plugin-broker](https://github.com/dishantlangayan/sc-plugin-broker/blob/v0.10.0/src/commands/broker/acl-profile/list.ts)_
 
 ## `sc broker acl-profile publish-topic-exceptions create`
 
@@ -611,7 +611,7 @@ EXAMPLES
   $ sc broker acl-profile publish-topic-exceptions create --name=myProfile --topic="devices/+/telemetry" --syntax=mqtt
 ```
 
-_See code: [@dishantlangayan/sc-plugin-broker](https://github.com/dishantlangayan/sc-plugin-broker/blob/v0.7.0/src/commands/broker/acl-profile/publish-topic-exceptions/create.ts)_
+_See code: [@dishantlangayan/sc-plugin-broker](https://github.com/dishantlangayan/sc-plugin-broker/blob/v0.10.0/src/commands/broker/acl-profile/publish-topic-exceptions/create.ts)_
 
 ## `sc broker acl-profile publish-topic-exceptions delete`
 
@@ -650,7 +650,7 @@ EXAMPLES
   $ sc broker acl-profile publish-topic-exceptions delete --name=myProfile --topic="devices/+/telemetry" --syntax=mqtt --no-prompt
 ```
 
-_See code: [@dishantlangayan/sc-plugin-broker](https://github.com/dishantlangayan/sc-plugin-broker/blob/v0.7.0/src/commands/broker/acl-profile/publish-topic-exceptions/delete.ts)_
+_See code: [@dishantlangayan/sc-plugin-broker](https://github.com/dishantlangayan/sc-plugin-broker/blob/v0.10.0/src/commands/broker/acl-profile/publish-topic-exceptions/delete.ts)_
 
 ## `sc broker acl-profile publish-topic-exceptions list`
 
@@ -682,7 +682,7 @@ EXAMPLES
   $ sc broker acl-profile publish-topic-exceptions list --name=myProfile
 ```
 
-_See code: [@dishantlangayan/sc-plugin-broker](https://github.com/dishantlangayan/sc-plugin-broker/blob/v0.7.0/src/commands/broker/acl-profile/publish-topic-exceptions/list.ts)_
+_See code: [@dishantlangayan/sc-plugin-broker](https://github.com/dishantlangayan/sc-plugin-broker/blob/v0.10.0/src/commands/broker/acl-profile/publish-topic-exceptions/list.ts)_
 
 ## `sc broker acl-profile subscribe-share-name-exceptions create`
 
@@ -719,7 +719,7 @@ EXAMPLES
   $ sc broker acl-profile subscribe-share-name-exceptions create --name=myProfile --topic="devices/+" --syntax=mqtt
 ```
 
-_See code: [@dishantlangayan/sc-plugin-broker](https://github.com/dishantlangayan/sc-plugin-broker/blob/v0.7.0/src/commands/broker/acl-profile/subscribe-share-name-exceptions/create.ts)_
+_See code: [@dishantlangayan/sc-plugin-broker](https://github.com/dishantlangayan/sc-plugin-broker/blob/v0.10.0/src/commands/broker/acl-profile/subscribe-share-name-exceptions/create.ts)_
 
 ## `sc broker acl-profile subscribe-share-name-exceptions delete`
 
@@ -758,7 +758,7 @@ EXAMPLES
   $ sc broker acl-profile subscribe-share-name-exceptions delete --name=myProfile --topic="devices/+" --syntax=mqtt --no-prompt
 ```
 
-_See code: [@dishantlangayan/sc-plugin-broker](https://github.com/dishantlangayan/sc-plugin-broker/blob/v0.7.0/src/commands/broker/acl-profile/subscribe-share-name-exceptions/delete.ts)_
+_See code: [@dishantlangayan/sc-plugin-broker](https://github.com/dishantlangayan/sc-plugin-broker/blob/v0.10.0/src/commands/broker/acl-profile/subscribe-share-name-exceptions/delete.ts)_
 
 ## `sc broker acl-profile subscribe-share-name-exceptions list`
 
@@ -790,7 +790,7 @@ EXAMPLES
   $ sc broker acl-profile subscribe-share-name-exceptions list --name=myProfile
 ```
 
-_See code: [@dishantlangayan/sc-plugin-broker](https://github.com/dishantlangayan/sc-plugin-broker/blob/v0.7.0/src/commands/broker/acl-profile/subscribe-share-name-exceptions/list.ts)_
+_See code: [@dishantlangayan/sc-plugin-broker](https://github.com/dishantlangayan/sc-plugin-broker/blob/v0.10.0/src/commands/broker/acl-profile/subscribe-share-name-exceptions/list.ts)_
 
 ## `sc broker acl-profile subscribe-topic-exceptions create`
 
@@ -828,7 +828,7 @@ EXAMPLES
   $ sc broker acl-profile subscribe-topic-exceptions create --name=myProfile --topic="devices/+/telemetry" --syntax=mqtt
 ```
 
-_See code: [@dishantlangayan/sc-plugin-broker](https://github.com/dishantlangayan/sc-plugin-broker/blob/v0.7.0/src/commands/broker/acl-profile/subscribe-topic-exceptions/create.ts)_
+_See code: [@dishantlangayan/sc-plugin-broker](https://github.com/dishantlangayan/sc-plugin-broker/blob/v0.10.0/src/commands/broker/acl-profile/subscribe-topic-exceptions/create.ts)_
 
 ## `sc broker acl-profile subscribe-topic-exceptions delete`
 
@@ -868,7 +868,7 @@ EXAMPLES
   $ sc broker acl-profile subscribe-topic-exceptions delete --name=myProfile --topic="devices/+/telemetry" --syntax=mqtt --no-prompt
 ```
 
-_See code: [@dishantlangayan/sc-plugin-broker](https://github.com/dishantlangayan/sc-plugin-broker/blob/v0.7.0/src/commands/broker/acl-profile/subscribe-topic-exceptions/delete.ts)_
+_See code: [@dishantlangayan/sc-plugin-broker](https://github.com/dishantlangayan/sc-plugin-broker/blob/v0.10.0/src/commands/broker/acl-profile/subscribe-topic-exceptions/delete.ts)_
 
 ## `sc broker acl-profile subscribe-topic-exceptions list`
 
@@ -900,7 +900,7 @@ EXAMPLES
   $ sc broker acl-profile subscribe-topic-exceptions list --name=myProfile
 ```
 
-_See code: [@dishantlangayan/sc-plugin-broker](https://github.com/dishantlangayan/sc-plugin-broker/blob/v0.7.0/src/commands/broker/acl-profile/subscribe-topic-exceptions/list.ts)_
+_See code: [@dishantlangayan/sc-plugin-broker](https://github.com/dishantlangayan/sc-plugin-broker/blob/v0.10.0/src/commands/broker/acl-profile/subscribe-topic-exceptions/list.ts)_
 
 ## `sc broker acl-profile update`
 
@@ -948,7 +948,7 @@ EXAMPLES
   $ sc broker acl-profile update --acl-profile-name=myProfile --publish-topic-default-action=disallow
 ```
 
-_See code: [@dishantlangayan/sc-plugin-broker](https://github.com/dishantlangayan/sc-plugin-broker/blob/v0.7.0/src/commands/broker/acl-profile/update.ts)_
+_See code: [@dishantlangayan/sc-plugin-broker](https://github.com/dishantlangayan/sc-plugin-broker/blob/v0.10.0/src/commands/broker/acl-profile/update.ts)_
 
 ## `sc broker client-profile create`
 
@@ -1019,7 +1019,7 @@ EXAMPLES
   $ sc broker client-profile create --client-profile-name=myProfile
 ```
 
-_See code: [@dishantlangayan/sc-plugin-broker](https://github.com/dishantlangayan/sc-plugin-broker/blob/v0.7.0/src/commands/broker/client-profile/create.ts)_
+_See code: [@dishantlangayan/sc-plugin-broker](https://github.com/dishantlangayan/sc-plugin-broker/blob/v0.10.0/src/commands/broker/client-profile/create.ts)_
 
 ## `sc broker client-profile delete`
 
@@ -1058,7 +1058,7 @@ EXAMPLES
   $ sc broker client-profile delete --client-profile-name=myProfile --no-prompt
 ```
 
-_See code: [@dishantlangayan/sc-plugin-broker](https://github.com/dishantlangayan/sc-plugin-broker/blob/v0.7.0/src/commands/broker/client-profile/delete.ts)_
+_See code: [@dishantlangayan/sc-plugin-broker](https://github.com/dishantlangayan/sc-plugin-broker/blob/v0.10.0/src/commands/broker/client-profile/delete.ts)_
 
 ## `sc broker client-profile display`
 
@@ -1093,7 +1093,7 @@ EXAMPLES
   $ sc broker client-profile display --client-profile-name=myProfile
 ```
 
-_See code: [@dishantlangayan/sc-plugin-broker](https://github.com/dishantlangayan/sc-plugin-broker/blob/v0.7.0/src/commands/broker/client-profile/display.ts)_
+_See code: [@dishantlangayan/sc-plugin-broker](https://github.com/dishantlangayan/sc-plugin-broker/blob/v0.10.0/src/commands/broker/client-profile/display.ts)_
 
 ## `sc broker client-profile list`
 
@@ -1138,7 +1138,7 @@ EXAMPLES
   $ sc broker client-profile list --client-profile-name="*prod*" --count=5 --all
 ```
 
-_See code: [@dishantlangayan/sc-plugin-broker](https://github.com/dishantlangayan/sc-plugin-broker/blob/v0.7.0/src/commands/broker/client-profile/list.ts)_
+_See code: [@dishantlangayan/sc-plugin-broker](https://github.com/dishantlangayan/sc-plugin-broker/blob/v0.10.0/src/commands/broker/client-profile/list.ts)_
 
 ## `sc broker client-profile update`
 
@@ -1209,7 +1209,7 @@ EXAMPLES
   $ sc broker client-profile update --client-profile-name=myProfile --eliding-delay=100
 ```
 
-_See code: [@dishantlangayan/sc-plugin-broker](https://github.com/dishantlangayan/sc-plugin-broker/blob/v0.7.0/src/commands/broker/client-profile/update.ts)_
+_See code: [@dishantlangayan/sc-plugin-broker](https://github.com/dishantlangayan/sc-plugin-broker/blob/v0.10.0/src/commands/broker/client-profile/update.ts)_
 
 ## `sc broker client-username create`
 
@@ -1223,7 +1223,7 @@ USAGE
 
 FLAGS
   -b, --broker-name=<value>                              Stored broker name. If not provided, uses the default broker.
-  -u, --client-username=<value>                          (required) The name of the Client Username to create.
+  -u, --username=<value>                                 (required) The name of the Client Username to create.
   -v, --msg-vpn-name=<value>                             The name of the Message VPN.
       --acl-profile-name=<value>                         The ACL Profile name for authorization.
       --broker-id=<value>                                Stored broker identifier. If not provided, uses the default
@@ -1250,16 +1250,16 @@ DESCRIPTION
   settings.
 
 EXAMPLES
-  $ sc broker client-username create --client-username=user1 --msg-vpn-name=default
+  $ sc broker client-username create --username=user1
 
-  $ sc broker client-username create --broker-name=dev-broker --client-username=user1 --enabled
+  $ sc broker client-username create --username=user1 --enabled
 
-  $ sc broker client-username create --client-username=user1 --password=secret123 --acl-profile-name=custom-acl --client-profile-name=custom-profile
+  $ sc broker client-username create --username=user1 --password=secret123 --acl-profile-name=custom-acl --client-profile-name=custom-profile
 
-  $ sc broker client-username create --client-username=admin --enabled --subscription-manager-enabled --guaranteed-endpoint-permission-override-enabled
+  $ sc broker client-username create --username=admin --enabled --subscription-manager-enabled --guaranteed-endpoint-permission-override-enabled
 ```
 
-_See code: [@dishantlangayan/sc-plugin-broker](https://github.com/dishantlangayan/sc-plugin-broker/blob/v0.7.0/src/commands/broker/client-username/create.ts)_
+_See code: [@dishantlangayan/sc-plugin-broker](https://github.com/dishantlangayan/sc-plugin-broker/blob/v0.10.0/src/commands/broker/client-username/create.ts)_
 
 ## `sc broker client-username delete`
 
@@ -1271,11 +1271,11 @@ USAGE
     <value>] [-v <value>] [--no-prompt]
 
 FLAGS
-  -b, --broker-name=<value>      Stored broker name. If not provided, uses the default broker.
-  -u, --client-username=<value>  (required) The name of the Client Username to delete.
-  -v, --msg-vpn-name=<value>     The name of the Message VPN.
-      --broker-id=<value>        Stored broker identifier. If not provided, uses the default broker.
-      --no-prompt                Skip confirmation prompt and proceed with deletion.
+  -b, --broker-name=<value>   Stored broker name. If not provided, uses the default broker.
+  -u, --username=<value>      (required) The name of the Client Username to delete.
+  -v, --msg-vpn-name=<value>  The name of the Message VPN.
+      --broker-id=<value>     Stored broker identifier. If not provided, uses the default broker.
+      --no-prompt             Skip confirmation prompt and proceed with deletion.
 
 GLOBAL FLAGS
   --json                Format output as json.
@@ -1293,16 +1293,12 @@ DESCRIPTION
   By default, a confirmation prompt is shown before deletion. Use --no-prompt to skip confirmation.
 
 EXAMPLES
-  $ sc broker client-username delete --client-username=user1 --msg-vpn-name=default
+  $ sc broker client-username delete --username=user1
 
-  $ sc broker client-username delete --broker-name=dev-broker --client-username=user1
-
-  $ sc broker client-username delete --client-username=user1 --no-prompt
-
-  $ sc broker client-username delete --broker-id=prod --client-username=tempUser --msg-vpn-name=production --no-prompt
+  $ sc broker client-username delete --username=user1 --no-prompt
 ```
 
-_See code: [@dishantlangayan/sc-plugin-broker](https://github.com/dishantlangayan/sc-plugin-broker/blob/v0.7.0/src/commands/broker/client-username/delete.ts)_
+_See code: [@dishantlangayan/sc-plugin-broker](https://github.com/dishantlangayan/sc-plugin-broker/blob/v0.10.0/src/commands/broker/client-username/delete.ts)_
 
 ## `sc broker client-username display`
 
@@ -1314,10 +1310,10 @@ USAGE
     <value>] [-v <value>]
 
 FLAGS
-  -b, --broker-name=<value>      Stored broker name. If not provided, uses the default broker.
-  -u, --client-username=<value>  (required) The name of the Client Username to display.
-  -v, --msg-vpn-name=<value>     The name of the Message VPN.
-      --broker-id=<value>        Stored broker identifier. If not provided, uses the default broker.
+  -b, --broker-name=<value>   Stored broker name. If not provided, uses the default broker.
+  -u, --username=<value>      (required) The name of the Client Username to display.
+  -v, --msg-vpn-name=<value>  The name of the Message VPN.
+      --broker-id=<value>     Stored broker identifier. If not provided, uses the default broker.
 
 GLOBAL FLAGS
   --json                Format output as json.
@@ -1331,14 +1327,10 @@ DESCRIPTION
   configuration settings and associated profiles.
 
 EXAMPLES
-  $ sc broker client-username display --client-username=user1 --msg-vpn-name=default
-
-  $ sc broker client-username display --broker-name=dev-broker --client-username=user1
-
-  $ sc broker client-username display --client-username=admin
+  $ sc broker client-username display --username=user1
 ```
 
-_See code: [@dishantlangayan/sc-plugin-broker](https://github.com/dishantlangayan/sc-plugin-broker/blob/v0.7.0/src/commands/broker/client-username/display.ts)_
+_See code: [@dishantlangayan/sc-plugin-broker](https://github.com/dishantlangayan/sc-plugin-broker/blob/v0.10.0/src/commands/broker/client-username/display.ts)_
 
 ## `sc broker client-username list`
 
@@ -1347,16 +1339,16 @@ List Client Usernames from a Solace Event Broker.
 ```
 USAGE
   $ sc broker client-username list [--json] [--log-level debug|warn|error|info|trace] [--broker-id <value> | -b <value>] [-v
-    <value>] [-a] [--client-username <value>] [-c <value>] [-s <value>]
+    <value>] [-a] [-c <value>] [-s <value>] [-u <value>]
 
 FLAGS
-  -a, --all                      Display all Client Usernames (auto-pagination).
-  -b, --broker-name=<value>      Stored broker name. If not provided, uses the default broker.
-  -c, --count=<value>            [default: 10] Number of Client Usernames to display per page.
-  -s, --select=<value>           Comma-separated list of attributes to display (max 10).
-  -v, --msg-vpn-name=<value>     The name of the Message VPN.
-      --broker-id=<value>        Stored broker identifier. If not provided, uses the default broker.
-      --client-username=<value>  Filter Client Usernames by name. Supports * wildcard.
+  -a, --all                   Display all Client Usernames (auto-pagination).
+  -b, --broker-name=<value>   Stored broker name. If not provided, uses the default broker.
+  -c, --count=<value>         [default: 10] Number of Client Usernames to display per page.
+  -s, --select=<value>        Comma-separated list of attributes to display (max 10).
+  -u, --username=<value>      Filter Client Usernames by name. Supports * wildcard.
+  -v, --msg-vpn-name=<value>  The name of the Message VPN.
+      --broker-id=<value>     Stored broker identifier. If not provided, uses the default broker.
 
 GLOBAL FLAGS
   --json                Format output as json.
@@ -1374,16 +1366,16 @@ EXAMPLES
 
   $ sc broker client-username list --count=20
 
-  $ sc broker client-username list --client-username="user*"
+  $ sc broker client-username list --username="user*"
 
   $ sc broker client-username list --select=clientUsername,enabled,aclProfileName
 
   $ sc broker client-username list --all
 
-  $ sc broker client-username list --client-username="admin*" --count=5 --all
+  $ sc broker client-username list --username="admin*" --count=5 --all
 ```
 
-_See code: [@dishantlangayan/sc-plugin-broker](https://github.com/dishantlangayan/sc-plugin-broker/blob/v0.7.0/src/commands/broker/client-username/list.ts)_
+_See code: [@dishantlangayan/sc-plugin-broker](https://github.com/dishantlangayan/sc-plugin-broker/blob/v0.10.0/src/commands/broker/client-username/list.ts)_
 
 ## `sc broker client-username update`
 
@@ -1397,7 +1389,7 @@ USAGE
 
 FLAGS
   -b, --broker-name=<value>                              Stored broker name. If not provided, uses the default broker.
-  -u, --client-username=<value>                          (required) The name of the Client Username to update.
+  -u, --username=<value>                                 (required) The name of the Client Username to update.
   -v, --msg-vpn-name=<value>                             The name of the Message VPN.
       --acl-profile-name=<value>                         The ACL Profile name for authorization.
       --broker-id=<value>                                Stored broker identifier. If not provided, uses the default
@@ -1423,16 +1415,16 @@ DESCRIPTION
   be temporarily disabled to apply the change.
 
 EXAMPLES
-  $ sc broker client-username update --client-username=user1 --enabled
+  $ sc broker client-username update --username=user1 --enabled
 
-  $ sc broker client-username update --broker-name=dev-broker --client-username=user1 --acl-profile-name=new-acl
+  $ sc broker client-username update --username=user1 --acl-profile-name=new-acl
 
-  $ sc broker client-username update --client-username=user1 --password=newPassword123
+  $ sc broker client-username update --username=user1 --password=newPassword123
 
-  $ sc broker client-username update --client-username=admin --subscription-manager-enabled --guaranteed-endpoint-permission-override-enabled
+  $ sc broker client-username update --username=admin --subscription-manager-enabled --guaranteed-endpoint-permission-override-enabled
 ```
 
-_See code: [@dishantlangayan/sc-plugin-broker](https://github.com/dishantlangayan/sc-plugin-broker/blob/v0.7.0/src/commands/broker/client-username/update.ts)_
+_See code: [@dishantlangayan/sc-plugin-broker](https://github.com/dishantlangayan/sc-plugin-broker/blob/v0.10.0/src/commands/broker/client-username/update.ts)_
 
 ## `sc broker login basic`
 
@@ -1471,7 +1463,7 @@ EXAMPLES
   $ sc broker login basic --broker-name=default-broker --semp-url=https://broker.example.com --semp-port=943 --set-default
 ```
 
-_See code: [@dishantlangayan/sc-plugin-broker](https://github.com/dishantlangayan/sc-plugin-broker/blob/v0.7.0/src/commands/broker/login/basic.ts)_
+_See code: [@dishantlangayan/sc-plugin-broker](https://github.com/dishantlangayan/sc-plugin-broker/blob/v0.10.0/src/commands/broker/login/basic.ts)_
 
 ## `sc broker login cloud`
 
@@ -1515,7 +1507,7 @@ EXAMPLES
   $ sc broker login cloud --broker-name=prod --no-prompt
 ```
 
-_See code: [@dishantlangayan/sc-plugin-broker](https://github.com/dishantlangayan/sc-plugin-broker/blob/v0.7.0/src/commands/broker/login/cloud.ts)_
+_See code: [@dishantlangayan/sc-plugin-broker](https://github.com/dishantlangayan/sc-plugin-broker/blob/v0.10.0/src/commands/broker/login/cloud.ts)_
 
 ## `sc broker login list`
 
@@ -1540,7 +1532,7 @@ EXAMPLES
   $ sc broker login list
 ```
 
-_See code: [@dishantlangayan/sc-plugin-broker](https://github.com/dishantlangayan/sc-plugin-broker/blob/v0.7.0/src/commands/broker/login/list.ts)_
+_See code: [@dishantlangayan/sc-plugin-broker](https://github.com/dishantlangayan/sc-plugin-broker/blob/v0.10.0/src/commands/broker/login/list.ts)_
 
 ## `sc broker logout`
 
@@ -1576,7 +1568,7 @@ EXAMPLES
   $ sc broker logout --broker-name=prod --no-prompt
 ```
 
-_See code: [@dishantlangayan/sc-plugin-broker](https://github.com/dishantlangayan/sc-plugin-broker/blob/v0.7.0/src/commands/broker/logout.ts)_
+_See code: [@dishantlangayan/sc-plugin-broker](https://github.com/dishantlangayan/sc-plugin-broker/blob/v0.10.0/src/commands/broker/logout.ts)_
 
 ## `sc broker queue-template create`
 
@@ -1584,7 +1576,7 @@ Create a Queue Template on a Solace Event Broker.
 
 ```
 USAGE
-  $ sc broker queue-template create -t <value> [--json] [--log-level debug|warn|error|info|trace] [--broker-id <value> | -b
+  $ sc broker queue-template create -n <value> [--json] [--log-level debug|warn|error|info|trace] [--broker-id <value> | -b
     <value>] [-v <value>] [-a exclusive|non-exclusive] [--dead-msg-queue <value>] [--durability-override
     none|non-durable|durable] [--max-bind-count <value>] [--max-delivered-unacked-msgs-per-flow <value>] [--max-msg-size
     <value>] [-s <value>] [--max-redelivery-count <value>] [--max-ttl <value>] [-p
@@ -1596,12 +1588,12 @@ FLAGS
   -b, --broker-name=<value>                          Stored broker name. If not provided, uses the default broker.
   -f, --queue-name-filter=<value>                    A wildcarded pattern to match queue names for applying this
                                                      template. Supports * and > wildcards.
+  -n, --name=<value>                                 (required) The name of the queue template to create.
   -p, --permission=<option>                          The permission level for all consumers of queues created from this
                                                      template, excluding the owner.
                                                      <options: consume|delete|modify-topic|no-access|read-only>
   -s, --max-msg-spool-usage=<value>                  The maximum message spool usage allowed by queues created from this
                                                      template, in megabytes (MB).
-  -t, --queue-template-name=<value>                  (required) The name of the queue template to create.
   -v, --msg-vpn-name=<value>                         The name of the Message VPN.
       --broker-id=<value>                            Stored broker identifier. If not provided, uses the default broker.
       --dead-msg-queue=<value>                       The name of the Dead Message Queue.
@@ -1631,18 +1623,14 @@ DESCRIPTION
   synchronized to HA mates and replication sites via config-sync.
 
 EXAMPLES
-  $ sc broker queue-template create --broker-name=dev-broker --queue-template-name=myTemplate --msg-vpn-name=default
+  $ sc broker queue-template create --name=myTemplate
 
-  $ sc broker queue-template create --broker-id=dev-broker --queue-template-name=myTemplate --msg-vpn-name=default --access-type=non-exclusive
+  $ sc broker queue-template create --name=myTemplate --access-type=non-exclusive --max-msg-spool-usage=1024 --permission=consume
 
-  $ sc broker queue-template create --broker-name=dev-broker --queue-template-name=myTemplate --msg-vpn-name=default --max-msg-spool-usage=1024 --permission=consume
-
-  $ sc broker queue-template create --queue-template-name=myTemplate --queue-name-filter="order.*"
-
-  $ sc broker queue-template create --queue-template-name=myTemplate --max-bind-count=500 --durability-override=non-durable
+  $ sc broker queue-template create --name=myTemplate --queue-name-filter="order.*"
 ```
 
-_See code: [@dishantlangayan/sc-plugin-broker](https://github.com/dishantlangayan/sc-plugin-broker/blob/v0.7.0/src/commands/broker/queue-template/create.ts)_
+_See code: [@dishantlangayan/sc-plugin-broker](https://github.com/dishantlangayan/sc-plugin-broker/blob/v0.10.0/src/commands/broker/queue-template/create.ts)_
 
 ## `sc broker queue-template delete`
 
@@ -1650,15 +1638,15 @@ Delete a Queue Template from a Solace Event Broker.
 
 ```
 USAGE
-  $ sc broker queue-template delete -t <value> [--json] [--log-level debug|warn|error|info|trace] [--broker-id <value> | -b
+  $ sc broker queue-template delete -n <value> [--json] [--log-level debug|warn|error|info|trace] [--broker-id <value> | -b
     <value>] [-v <value>] [--no-prompt]
 
 FLAGS
-  -b, --broker-name=<value>          Stored broker name. If not provided, uses the default broker.
-  -t, --queue-template-name=<value>  (required) The name of the queue template to delete.
-  -v, --msg-vpn-name=<value>         The name of the Message VPN.
-      --broker-id=<value>            Stored broker identifier. If not provided, uses the default broker.
-      --no-prompt                    Skip confirmation prompt and proceed with deletion.
+  -b, --broker-name=<value>   Stored broker name. If not provided, uses the default broker.
+  -n, --name=<value>          (required) The name of the queue template to delete.
+  -v, --msg-vpn-name=<value>  The name of the Message VPN.
+      --broker-id=<value>     Stored broker identifier. If not provided, uses the default broker.
+      --no-prompt             Skip confirmation prompt and proceed with deletion.
 
 GLOBAL FLAGS
   --json                Format output as json.
@@ -1676,16 +1664,12 @@ DESCRIPTION
   By default, a confirmation prompt is shown before deletion. Use --no-prompt to skip confirmation.
 
 EXAMPLES
-  $ sc broker queue-template delete --queue-template-name=myTemplate --msg-vpn-name=default
+  $ sc broker queue-template delete --name=myTemplate
 
-  $ sc broker queue-template delete --broker-name=dev-broker --queue-template-name=myTemplate
-
-  $ sc broker queue-template delete --queue-template-name=myTemplate --no-prompt
-
-  $ sc broker queue-template delete --broker-id=prod --queue-template-name=tempTemplate --msg-vpn-name=production --no-prompt
+  $ sc broker queue-template delete --name=myTemplate --no-prompt
 ```
 
-_See code: [@dishantlangayan/sc-plugin-broker](https://github.com/dishantlangayan/sc-plugin-broker/blob/v0.7.0/src/commands/broker/queue-template/delete.ts)_
+_See code: [@dishantlangayan/sc-plugin-broker](https://github.com/dishantlangayan/sc-plugin-broker/blob/v0.10.0/src/commands/broker/queue-template/delete.ts)_
 
 ## `sc broker queue-template display`
 
@@ -1693,14 +1677,14 @@ Display queue template information from a Solace Event Broker.
 
 ```
 USAGE
-  $ sc broker queue-template display -t <value> [--json] [--log-level debug|warn|error|info|trace] [--broker-id <value> | -b
+  $ sc broker queue-template display -n <value> [--json] [--log-level debug|warn|error|info|trace] [--broker-id <value> | -b
     <value>] [-v <value>]
 
 FLAGS
-  -b, --broker-name=<value>          Stored broker name. If not provided, uses the default broker.
-  -t, --queue-template-name=<value>  (required) The name of the queue template to display.
-  -v, --msg-vpn-name=<value>         The name of the Message VPN.
-      --broker-id=<value>            Stored broker identifier. If not provided, uses the default broker.
+  -b, --broker-name=<value>   Stored broker name. If not provided, uses the default broker.
+  -n, --name=<value>          (required) The name of the queue template to display.
+  -v, --msg-vpn-name=<value>  The name of the Message VPN.
+      --broker-id=<value>     Stored broker identifier. If not provided, uses the default broker.
 
 GLOBAL FLAGS
   --json                Format output as json.
@@ -1714,14 +1698,10 @@ DESCRIPTION
   and state.
 
 EXAMPLES
-  $ sc broker queue-template display --queue-template-name=myTemplate --msg-vpn-name=default
-
-  $ sc broker queue-template display --broker-name=dev-broker --queue-template-name=myTemplate --msg-vpn-name=default
-
-  $ sc broker queue-template display --queue-template-name=myTemplate
+  $ sc broker queue-template display --name=myTemplate
 ```
 
-_See code: [@dishantlangayan/sc-plugin-broker](https://github.com/dishantlangayan/sc-plugin-broker/blob/v0.7.0/src/commands/broker/queue-template/display.ts)_
+_See code: [@dishantlangayan/sc-plugin-broker](https://github.com/dishantlangayan/sc-plugin-broker/blob/v0.10.0/src/commands/broker/queue-template/display.ts)_
 
 ## `sc broker queue-template list`
 
@@ -1730,16 +1710,16 @@ List queue templates from a Solace Event Broker.
 ```
 USAGE
   $ sc broker queue-template list [--json] [--log-level debug|warn|error|info|trace] [--broker-id <value> | -b <value>] [-v
-    <value>] [-a] [-c <value>] [-t <value>] [-s <value>]
+    <value>] [-a] [-c <value>] [-n <value>] [-s <value>]
 
 FLAGS
-  -a, --all                          Display all queue templates (auto-pagination).
-  -b, --broker-name=<value>          Stored broker name. If not provided, uses the default broker.
-  -c, --count=<value>                [default: 10] Number of queue templates to display per page.
-  -s, --select=<value>               Comma-separated list of attributes to display (max 10).
-  -t, --queue-template-name=<value>  Filter queue templates by name. Supports * wildcard.
-  -v, --msg-vpn-name=<value>         The name of the Message VPN.
-      --broker-id=<value>            Stored broker identifier. If not provided, uses the default broker.
+  -a, --all                   Display all queue templates (auto-pagination).
+  -b, --broker-name=<value>   Stored broker name. If not provided, uses the default broker.
+  -c, --count=<value>         [default: 10] Number of queue templates to display per page.
+  -n, --name=<value>          Filter queue templates by name. Supports * wildcard.
+  -s, --select=<value>        Comma-separated list of attributes to display (max 10).
+  -v, --msg-vpn-name=<value>  The name of the Message VPN.
+      --broker-id=<value>     Stored broker identifier. If not provided, uses the default broker.
 
 GLOBAL FLAGS
   --json                Format output as json.
@@ -1757,16 +1737,16 @@ EXAMPLES
 
   $ sc broker queue-template list --count=20
 
-  $ sc broker queue-template list --queue-template-name="order*"
+  $ sc broker queue-template list --name="order*"
 
   $ sc broker queue-template list --select=queueTemplateName,permission,maxMsgSpoolUsage
 
   $ sc broker queue-template list --all
 
-  $ sc broker queue-template list --queue-template-name="*test*" --count=5 --all
+  $ sc broker queue-template list --name="*test*" --count=5 --all
 ```
 
-_See code: [@dishantlangayan/sc-plugin-broker](https://github.com/dishantlangayan/sc-plugin-broker/blob/v0.7.0/src/commands/broker/queue-template/list.ts)_
+_See code: [@dishantlangayan/sc-plugin-broker](https://github.com/dishantlangayan/sc-plugin-broker/blob/v0.10.0/src/commands/broker/queue-template/list.ts)_
 
 ## `sc broker queue-template update`
 
@@ -1774,7 +1754,7 @@ Update a Queue Template on a Solace Event Broker.
 
 ```
 USAGE
-  $ sc broker queue-template update -t <value> [--json] [--log-level debug|warn|error|info|trace] [--broker-id <value> | -b
+  $ sc broker queue-template update -n <value> [--json] [--log-level debug|warn|error|info|trace] [--broker-id <value> | -b
     <value>] [-v <value>] [-a exclusive|non-exclusive] [--dead-msg-queue <value>] [--durability-override
     none|non-durable|durable] [--max-bind-count <value>] [--max-delivered-unacked-msgs-per-flow <value>] [--max-msg-size
     <value>] [-s <value>] [--max-redelivery-count <value>] [--max-ttl <value>] [-p
@@ -1786,12 +1766,12 @@ FLAGS
   -b, --broker-name=<value>                          Stored broker name. If not provided, uses the default broker.
   -f, --queue-name-filter=<value>                    A wildcarded pattern to match queue names for applying this
                                                      template. Supports * and > wildcards.
+  -n, --name=<value>                                 (required) The name of the queue template to update.
   -p, --permission=<option>                          The permission level for all consumers of queues created from this
                                                      template, excluding the owner.
                                                      <options: consume|delete|modify-topic|no-access|read-only>
   -s, --max-msg-spool-usage=<value>                  The maximum message spool usage allowed by queues created from this
                                                      template, in megabytes (MB).
-  -t, --queue-template-name=<value>                  (required) The name of the queue template to update.
   -v, --msg-vpn-name=<value>                         The name of the Message VPN.
       --broker-id=<value>                            Stored broker identifier. If not provided, uses the default broker.
       --dead-msg-queue=<value>                       The name of the Dead Message Queue.
@@ -1821,18 +1801,14 @@ DESCRIPTION
   to HA mates and replication sites via config-sync.
 
 EXAMPLES
-  $ sc broker queue-template update --broker-name=dev-broker --queue-template-name=myTemplate --msg-vpn-name=default --permission=consume
+  $ sc broker queue-template update --name=myTemplate --permission=consume
 
-  $ sc broker queue-template update --broker-id=dev-broker --queue-template-name=myTemplate --msg-vpn-name=default --max-msg-spool-usage=2048
+  $ sc broker queue-template update --name=myTemplate --max-msg-spool-usage=1024 --max-ttl=3600
 
-  $ sc broker queue-template update --broker-name=dev-broker --queue-template-name=myTemplate --msg-vpn-name=default --max-msg-spool-usage=1024 --max-ttl=3600
-
-  $ sc broker queue-template update --queue-template-name=myTemplate --queue-name-filter="order.*"
-
-  $ sc broker queue-template update --queue-template-name=myTemplate --permission=read-only --max-bind-count=200
+  $ sc broker queue-template update --name=myTemplate --queue-name-filter="order.*"
 ```
 
-_See code: [@dishantlangayan/sc-plugin-broker](https://github.com/dishantlangayan/sc-plugin-broker/blob/v0.7.0/src/commands/broker/queue-template/update.ts)_
+_See code: [@dishantlangayan/sc-plugin-broker](https://github.com/dishantlangayan/sc-plugin-broker/blob/v0.10.0/src/commands/broker/queue-template/update.ts)_
 
 ## `sc broker queue create`
 
@@ -1880,7 +1856,7 @@ EXAMPLES
   $ sc broker queue create --name=myQueue --access-type=non-exclusive --max-msg-spool-usage=1024 --egress-enabled --ingress-enabled
 ```
 
-_See code: [@dishantlangayan/sc-plugin-broker](https://github.com/dishantlangayan/sc-plugin-broker/blob/v0.7.0/src/commands/broker/queue/create.ts)_
+_See code: [@dishantlangayan/sc-plugin-broker](https://github.com/dishantlangayan/sc-plugin-broker/blob/v0.10.0/src/commands/broker/queue/create.ts)_
 
 ## `sc broker queue delete`
 
@@ -1916,7 +1892,7 @@ EXAMPLES
   $ sc broker queue delete --queue-name=myQueue --no-prompt
 ```
 
-_See code: [@dishantlangayan/sc-plugin-broker](https://github.com/dishantlangayan/sc-plugin-broker/blob/v0.7.0/src/commands/broker/queue/delete.ts)_
+_See code: [@dishantlangayan/sc-plugin-broker](https://github.com/dishantlangayan/sc-plugin-broker/blob/v0.10.0/src/commands/broker/queue/delete.ts)_
 
 ## `sc broker queue display`
 
@@ -1951,7 +1927,7 @@ EXAMPLES
   $ sc broker queue display --queue-name=myQueue --show-subscriptions
 ```
 
-_See code: [@dishantlangayan/sc-plugin-broker](https://github.com/dishantlangayan/sc-plugin-broker/blob/v0.7.0/src/commands/broker/queue/display.ts)_
+_See code: [@dishantlangayan/sc-plugin-broker](https://github.com/dishantlangayan/sc-plugin-broker/blob/v0.10.0/src/commands/broker/queue/display.ts)_
 
 ## `sc broker queue list`
 
@@ -1997,7 +1973,7 @@ EXAMPLES
   $ sc broker queue list --name="*test*" --count=5 --all
 ```
 
-_See code: [@dishantlangayan/sc-plugin-broker](https://github.com/dishantlangayan/sc-plugin-broker/blob/v0.7.0/src/commands/broker/queue/list.ts)_
+_See code: [@dishantlangayan/sc-plugin-broker](https://github.com/dishantlangayan/sc-plugin-broker/blob/v0.10.0/src/commands/broker/queue/list.ts)_
 
 ## `sc broker queue subscriptions create`
 
@@ -2037,7 +2013,7 @@ EXAMPLES
   $ sc broker queue subscriptions create --name=myQueue --topic=events/user/*
 ```
 
-_See code: [@dishantlangayan/sc-plugin-broker](https://github.com/dishantlangayan/sc-plugin-broker/blob/v0.7.0/src/commands/broker/queue/subscriptions/create.ts)_
+_See code: [@dishantlangayan/sc-plugin-broker](https://github.com/dishantlangayan/sc-plugin-broker/blob/v0.10.0/src/commands/broker/queue/subscriptions/create.ts)_
 
 ## `sc broker queue subscriptions delete`
 
@@ -2074,7 +2050,7 @@ EXAMPLES
   $ sc broker queue subscriptions delete --name=myQueue --topic=orders/> --no-prompt
 ```
 
-_See code: [@dishantlangayan/sc-plugin-broker](https://github.com/dishantlangayan/sc-plugin-broker/blob/v0.7.0/src/commands/broker/queue/subscriptions/delete.ts)_
+_See code: [@dishantlangayan/sc-plugin-broker](https://github.com/dishantlangayan/sc-plugin-broker/blob/v0.10.0/src/commands/broker/queue/subscriptions/delete.ts)_
 
 ## `sc broker queue update`
 
@@ -2125,7 +2101,7 @@ EXAMPLES
   $ sc broker queue update --name=myQueue --no-egress-enabled
 ```
 
-_See code: [@dishantlangayan/sc-plugin-broker](https://github.com/dishantlangayan/sc-plugin-broker/blob/v0.7.0/src/commands/broker/queue/update.ts)_
+_See code: [@dishantlangayan/sc-plugin-broker](https://github.com/dishantlangayan/sc-plugin-broker/blob/v0.10.0/src/commands/broker/queue/update.ts)_
 
 ## `sc commands`
 
@@ -2243,7 +2219,7 @@ EXAMPLES
   $ sc missionctrl broker create --alias=my-alias --name=MyBrokerName --datacenter-id=eks-ca-central-1a --service-class-id=DEVELOPER
 ```
 
-_See code: [src/commands/missionctrl/broker/create.ts](https://github.com/SolaceLabs/solace-cloud-cli/blob/v0.5.3/src/commands/missionctrl/broker/create.ts)_
+_See code: [src/commands/missionctrl/broker/create.ts](https://github.com/SolaceLabs/solace-cloud-cli/blob/v0.6.0/src/commands/missionctrl/broker/create.ts)_
 
 ## `sc missionctrl broker delete`
 
@@ -2286,7 +2262,7 @@ EXAMPLES
   $ sc missionctrl broker delete --broker-id=MyBrokerId --no-prompt
 ```
 
-_See code: [src/commands/missionctrl/broker/delete.ts](https://github.com/SolaceLabs/solace-cloud-cli/blob/v0.5.3/src/commands/missionctrl/broker/delete.ts)_
+_See code: [src/commands/missionctrl/broker/delete.ts](https://github.com/SolaceLabs/solace-cloud-cli/blob/v0.6.0/src/commands/missionctrl/broker/delete.ts)_
 
 ## `sc missionctrl broker display`
 
@@ -2325,7 +2301,7 @@ EXAMPLES
   $ sc missionctrl broker display --alias=my-alias --name=MyBrokerName
 ```
 
-_See code: [src/commands/missionctrl/broker/display.ts](https://github.com/SolaceLabs/solace-cloud-cli/blob/v0.5.3/src/commands/missionctrl/broker/display.ts)_
+_See code: [src/commands/missionctrl/broker/display.ts](https://github.com/SolaceLabs/solace-cloud-cli/blob/v0.6.0/src/commands/missionctrl/broker/display.ts)_
 
 ## `sc missionctrl broker list`
 
@@ -2381,7 +2357,7 @@ EXAMPLES
   $ sc missionctrl broker list --alias=my-alias --name=MyBrokerName --pageNumber=1 --pageSize=10 --sort=name:asc
 ```
 
-_See code: [src/commands/missionctrl/broker/list.ts](https://github.com/SolaceLabs/solace-cloud-cli/blob/v0.5.3/src/commands/missionctrl/broker/list.ts)_
+_See code: [src/commands/missionctrl/broker/list.ts](https://github.com/SolaceLabs/solace-cloud-cli/blob/v0.6.0/src/commands/missionctrl/broker/list.ts)_
 
 ## `sc missionctrl broker opstatus`
 
@@ -2425,7 +2401,7 @@ EXAMPLES
   $ sc missionctrl broker opstatus --alias=my-alias -b <broker-id>
 ```
 
-_See code: [src/commands/missionctrl/broker/opstatus.ts](https://github.com/SolaceLabs/solace-cloud-cli/blob/v0.5.3/src/commands/missionctrl/broker/opstatus.ts)_
+_See code: [src/commands/missionctrl/broker/opstatus.ts](https://github.com/SolaceLabs/solace-cloud-cli/blob/v0.6.0/src/commands/missionctrl/broker/opstatus.ts)_
 
 ## `sc missionctrl broker state`
 
@@ -2467,7 +2443,7 @@ EXAMPLES
   $ sc missionctrl broker state --alias=my-alias --name=MyBrokerName
 ```
 
-_See code: [src/commands/missionctrl/broker/state.ts](https://github.com/SolaceLabs/solace-cloud-cli/blob/v0.5.3/src/commands/missionctrl/broker/state.ts)_
+_See code: [src/commands/missionctrl/broker/state.ts](https://github.com/SolaceLabs/solace-cloud-cli/blob/v0.6.0/src/commands/missionctrl/broker/state.ts)_
 
 ## `sc missionctrl broker update`
 
@@ -2512,7 +2488,7 @@ EXAMPLES
   $ sc missionctrl broker update --alias=my-alias --name <name> --new-name <new-name>
 ```
 
-_See code: [src/commands/missionctrl/broker/update.ts](https://github.com/SolaceLabs/solace-cloud-cli/blob/v0.5.3/src/commands/missionctrl/broker/update.ts)_
+_See code: [src/commands/missionctrl/broker/update.ts](https://github.com/SolaceLabs/solace-cloud-cli/blob/v0.6.0/src/commands/missionctrl/broker/update.ts)_
 
 ## `sc platform env create`
 
@@ -2553,7 +2529,7 @@ EXAMPLES
   $ sc platform env create --alias=my-alias --name=MyEnvironment --isDefault
 ```
 
-_See code: [src/commands/platform/env/create.ts](https://github.com/SolaceLabs/solace-cloud-cli/blob/v0.5.3/src/commands/platform/env/create.ts)_
+_See code: [src/commands/platform/env/create.ts](https://github.com/SolaceLabs/solace-cloud-cli/blob/v0.6.0/src/commands/platform/env/create.ts)_
 
 ## `sc platform env delete`
 
@@ -2593,7 +2569,7 @@ EXAMPLES
   $ sc platform env delete --env-id=MyEnvId --no-prompt
 ```
 
-_See code: [src/commands/platform/env/delete.ts](https://github.com/SolaceLabs/solace-cloud-cli/blob/v0.5.3/src/commands/platform/env/delete.ts)_
+_See code: [src/commands/platform/env/delete.ts](https://github.com/SolaceLabs/solace-cloud-cli/blob/v0.6.0/src/commands/platform/env/delete.ts)_
 
 ## `sc platform env display`
 
@@ -2632,7 +2608,7 @@ EXAMPLES
   $ sc platform env display --alias=my-alias --name=MyEnvName
 ```
 
-_See code: [src/commands/platform/env/display.ts](https://github.com/SolaceLabs/solace-cloud-cli/blob/v0.5.3/src/commands/platform/env/display.ts)_
+_See code: [src/commands/platform/env/display.ts](https://github.com/SolaceLabs/solace-cloud-cli/blob/v0.6.0/src/commands/platform/env/display.ts)_
 
 ## `sc platform env list`
 
@@ -2670,7 +2646,7 @@ EXAMPLES
   $ sc platform env list --alias=my-alias --name=Default --pageNumber=1 --pageSize=10 --sort=name:ASC
 ```
 
-_See code: [src/commands/platform/env/list.ts](https://github.com/SolaceLabs/solace-cloud-cli/blob/v0.5.3/src/commands/platform/env/list.ts)_
+_See code: [src/commands/platform/env/list.ts](https://github.com/SolaceLabs/solace-cloud-cli/blob/v0.6.0/src/commands/platform/env/list.ts)_
 
 ## `sc platform env update`
 
@@ -2714,7 +2690,7 @@ EXAMPLES
   $ sc platform env update --alias=my-alias --name=MyEnvName --new-name=MyNewEnvName
 ```
 
-_See code: [src/commands/platform/env/update.ts](https://github.com/SolaceLabs/solace-cloud-cli/blob/v0.5.3/src/commands/platform/env/update.ts)_
+_See code: [src/commands/platform/env/update.ts](https://github.com/SolaceLabs/solace-cloud-cli/blob/v0.6.0/src/commands/platform/env/update.ts)_
 
 ## `sc plugins`
 
