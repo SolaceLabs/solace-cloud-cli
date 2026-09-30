@@ -1,7 +1,14 @@
-import {renderTable, ScCommand} from '@dishantlangayan/sc-cli-core'
+import {ScCommand} from '@dishantlangayan/sc-cli-core'
 import {Flags} from '@oclif/core'
 
 import {resolveOrgConnection} from '../../../lib/org-utils.js'
+import {
+  createTableWriter,
+  DEFAULT_PAGE_SIZE,
+  fetchPages,
+  MAX_PAGE_SIZE,
+  paginationFlags,
+} from '../../../lib/pagination.js'
 import {Environment, EnvironmentListApiResponse} from '../../../types/environment.js'
 
 export default class PlatformEnvList extends ScCommand<typeof PlatformEnvList> {
@@ -12,7 +19,8 @@ export default class PlatformEnvList extends ScCommand<typeof PlatformEnvList> {
   static override examples = [
     '<%= config.bin %> <%= command.id %>',
     '<%= config.bin %> <%= command.id %> --org=my-org',
-    '<%= config.bin %> <%= command.id %> --alias=my-alias --name=Default --pageNumber=1 --pageSize=10 --sort=name:ASC',
+    '<%= config.bin %> <%= command.id %> --alias=my-alias --name=Default --page-number=1 --page-size=10 --sort=name:ASC',
+    '<%= config.bin %> <%= command.id %> --all',
   ]
   static override flags = {
     alias: Flags.string({
@@ -29,16 +37,7 @@ export default class PlatformEnvList extends ScCommand<typeof PlatformEnvList> {
       description: 'Organization ID to use. If not specified, uses the default organization or alias if specified.',
       exclusive: ['alias'],
     }),
-    pageNumber: Flags.integer({
-      char: 'p',
-      description: 'The page number to get. Defaults to 10',
-    }),
-    pageSize: Flags.integer({
-      char: 's',
-      description: 'The number of environments to get per page. Defaults to 1',
-      max: 100,
-      min: 1,
-    }),
+    ...paginationFlags('environments', {pageNumber: 'p', pageSize: 's'}),
     sort: Flags.string({
       description: 'The query (fieldName:<ASC/DESC>) used to sort the environment list in the response.',
     }),
@@ -49,34 +48,57 @@ export default class PlatformEnvList extends ScCommand<typeof PlatformEnvList> {
 
     const conn = await resolveOrgConnection(this, flags.org ?? flags.alias)
 
-    const pageSize = flags.pageSize ?? 10
-    const pageNumber = flags.pageNumber ?? 1
+    const pageSize = flags['page-size'] ?? (flags.all ? MAX_PAGE_SIZE : DEFAULT_PAGE_SIZE)
+    const pageNumber = flags['page-number'] ?? 1
 
     // API url
-    let apiUrl: string = `/platform/environments?pageSize=${pageSize}&pageNumber=${pageNumber}`
-    if (flags.sort) {
-      apiUrl += `&sort=${flags.sort}`
+    const buildUrl = (page: number, size: number): string => {
+      let apiUrl: string = `/platform/environments?pageSize=${size}&pageNumber=${page}`
+      if (flags.sort) {
+        apiUrl += `&sort=${flags.sort}`
+      }
+
+      return apiUrl
     }
 
-    // API call
-    const resp = await conn.get<EnvironmentListApiResponse>(apiUrl)
+    // Output as table, streaming rows as each page is received when fetching all pages
+    const table = createTableWriter(['Name', 'Id', 'Is Default', 'Is Production', 'Description'], {
+      columnConfig: {4: {width: 50, wrapWord: true}},
+      log: (msg) => this.log(msg),
+      stream: flags.all && !this.jsonEnabled(),
+      streamColumnConfig: {
+        0: {width: 20, wrapWord: true},
+        1: {width: 26},
+        2: {width: 10},
+        3: {width: 13},
+        4: {width: 50, wrapWord: true},
+      },
+    })
 
-    // Array to output as table
-    const envArray = [
-      ['Name', 'Id', 'Is Default', 'Is Production', 'Description'],
-      ...resp.data.map((item: Environment) => [
-        item.name,
-        item.id,
-        item.isDefault,
-        item.isProduction,
-        item.description,
-      ]),
-    ]
+    // API calls
+    let resp: EnvironmentListApiResponse | undefined
+    const allData: Environment[] = []
+    for await (const page of fetchPages<Environment, EnvironmentListApiResponse>(conn, buildUrl, {
+      all: flags.all,
+      pageNumber,
+      pageSize,
+    })) {
+      resp = page
+      allData.push(...page.data)
+      table.write(
+        page.data.map((item: Environment) => [
+          item.name,
+          item.id,
+          item.isDefault,
+          item.isProduction,
+          item.description,
+        ]),
+      )
+    }
 
-    // Display results as a table
-    this.log(renderTable(envArray, {4: {width: 50, wrapWord: true}}))
+    table.end()
 
     // Return raw json if --json flag is set
-    return resp
+    return {...(resp as EnvironmentListApiResponse), data: allData}
   }
 }

@@ -2310,7 +2310,7 @@ Get a listing of event broker services.
 ```
 USAGE
   $ sc missionctrl broker list [--json] [--log-level debug|warn|error|info|trace] [-a <value> | -o <value>] [-n <value>]
-    [--pageNumber <value>] [--pageSize <value>] [--sort <value>]
+    [--all | --page-number <value>] [--page-size <value>] [--sort <value>]
 
 FLAGS
   -a, --alias=<value>
@@ -2322,11 +2322,14 @@ FLAGS
   -o, --org=<value>
       Organization ID to use. If not specified, uses the default organization or alias if specified.
 
-  --pageNumber=<value>
+  --all
+      Fetch all pages of event broker services. Results are streamed to the table as each page is received.
+
+  --page-number=<value>
       The page number to get. Defaults to 1
 
-  --pageSize=<value>
-      The number of event broker services to return per page. Defaults to 10
+  --page-size=<value>
+      The number of event broker services to return per page. Defaults to 10, or 100 when --all is set
 
   --sort=<value>
       Sort the returned event broker services by attribute.
@@ -2354,7 +2357,9 @@ EXAMPLES
 
   $ sc missionctrl broker list --org=my-org
 
-  $ sc missionctrl broker list --alias=my-alias --name=MyBrokerName --pageNumber=1 --pageSize=10 --sort=name:asc
+  $ sc missionctrl broker list --alias=my-alias --name=MyBrokerName --page-number=1 --page-size=10 --sort=name:asc
+
+  $ sc missionctrl broker list --all
 ```
 
 _See code: [src/commands/missionctrl/broker/list.ts](https://github.com/SolaceLabs/solace-cloud-cli/blob/v0.7.0/src/commands/missionctrl/broker/list.ts)_
@@ -2616,17 +2621,19 @@ Get a list of all Environments.
 
 ```
 USAGE
-  $ sc platform env list [--json] [--log-level debug|warn|error|info|trace] [-a <value> | -o <value>] [-n <value>] [-p
-    <value>] [-s <value>] [--sort <value>]
+  $ sc platform env list [--json] [--log-level debug|warn|error|info|trace] [-a <value> | -o <value>] [-n <value>]
+    [--all | -p <value>] [-s <value>] [--sort <value>]
 
 FLAGS
-  -a, --alias=<value>       Organization alias to use. If not specified, uses the default organization.
-  -n, --name=<value>        Name of the environment to match on.
-  -o, --org=<value>         Organization ID to use. If not specified, uses the default organization or alias if
-                            specified.
-  -p, --pageNumber=<value>  The page number to get. Defaults to 10
-  -s, --pageSize=<value>    The number of environments to get per page. Defaults to 1
-      --sort=<value>        The query (fieldName:<ASC/DESC>) used to sort the environment list in the response.
+  -a, --alias=<value>        Organization alias to use. If not specified, uses the default organization.
+  -n, --name=<value>         Name of the environment to match on.
+  -o, --org=<value>          Organization ID to use. If not specified, uses the default organization or alias if
+                             specified.
+  -p, --page-number=<value>  The page number to get. Defaults to 1
+  -s, --page-size=<value>    The number of environments to return per page. Defaults to 10, or 100 when --all is set
+      --all                  Fetch all pages of environments. Results are streamed to the table as each page is
+                             received.
+      --sort=<value>         The query (fieldName:<ASC/DESC>) used to sort the environment list in the response.
 
 GLOBAL FLAGS
   --json                Format output as json.
@@ -2643,7 +2650,9 @@ EXAMPLES
 
   $ sc platform env list --org=my-org
 
-  $ sc platform env list --alias=my-alias --name=Default --pageNumber=1 --pageSize=10 --sort=name:ASC
+  $ sc platform env list --alias=my-alias --name=Default --page-number=1 --page-size=10 --sort=name:ASC
+
+  $ sc platform env list --all
 ```
 
 _See code: [src/commands/platform/env/list.ts](https://github.com/SolaceLabs/solace-cloud-cli/blob/v0.7.0/src/commands/platform/env/list.ts)_

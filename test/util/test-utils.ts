@@ -10,6 +10,15 @@ export function setEnvVariables(): void {
   process.env.SC_ACCESS_TOKEN = 'TEST'
 }
 
+export function setStdoutIsTTY(isTTY: boolean): void {
+  Object.defineProperty(process.stdout, 'isTTY', {configurable: true, value: isTTY})
+}
+
+export function restoreStdoutIsTTY(descriptor: PropertyDescriptor | undefined): void {
+  if (descriptor) Object.defineProperty(process.stdout, 'isTTY', descriptor)
+  else delete (process.stdout as {isTTY?: boolean}).isTTY
+}
+
 export function anEnv(name: string, isDefault: boolean, isProd: boolean) {
   return {
     bgColor: '#DA162D',

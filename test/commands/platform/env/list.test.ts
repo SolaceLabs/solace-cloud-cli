@@ -5,7 +5,11 @@ import * as sinon from 'sinon'
 
 import PlatformEnvList from '../../../../src/commands/platform/env/list.js'
 import {Environment} from '../../../../src/types/environment'
-import {anEnv} from '../../../util/test-utils'
+import {anEnv, restoreStdoutIsTTY, setStdoutIsTTY} from '../../../util/test-utils'
+
+const aPagination = (pageNumber: number, pageSize: number, count: number, totalPages: number) => ({
+  pagination: {count, nextPage: null, pageNumber, pageSize, totalPages},
+})
 
 describe('platform:env:list', () => {
   const defaultPageSize = 10
@@ -15,7 +19,13 @@ describe('platform:env:list', () => {
   let getOrgManagerStub: sinon.SinonStub
   let scConnStub: sinon.SinonStub
 
+  let stdoutIsTTY: PropertyDescriptor | undefined
+
   beforeEach(() => {
+    // Default to non-TTY output so results don't depend on where the tests are run
+    stdoutIsTTY = Object.getOwnPropertyDescriptor(process.stdout, 'isTTY')
+    setStdoutIsTTY(false)
+
     // Stub OrgManager
     orgManagerStub = sinon.createStubInstance(OrgManager)
     getOrgManagerStub = sinon.stub(
@@ -53,6 +63,7 @@ describe('platform:env:list', () => {
   afterEach(() => {
     getOrgManagerStub.restore()
     scConnStub.restore()
+    restoreStdoutIsTTY(stdoutIsTTY)
   })
 
   it('runs platform:env:list', async () => {
@@ -93,7 +104,7 @@ describe('platform:env:list', () => {
     expect(stdout).to.contain(renderTable(envArray, {4: {width: 50, wrapWord: true}}))
   })
 
-  it('runs platform:env:list --pageSize=5 --pageNumber=1', async () => {
+  it('runs platform:env:list --page-size=5 --page-number=1', async () => {
     // Arrange
     const pageSize = 5
     const pageNumber = 1
@@ -124,11 +135,62 @@ describe('platform:env:list', () => {
     ]
 
     // Act
-    const {stdout} = await runCommand(`platform:env:list --pageSize=${pageSize} --pageNumber=${pageNumber}`)
+    const {stdout} = await runCommand(`platform:env:list --page-size=${pageSize} --page-number=${pageNumber}`)
 
     // Assert
     expect(scConnStub.getCall(0).args[0]).to.contain(`?pageSize=${pageSize}&pageNumber=${pageNumber}`)
     expect(stdout).to.contain(renderTable(envArray, {4: {width: 50, wrapWord: true}}))
+  })
+
+  it('runs platform:env:list --all and fetches every page', async () => {
+    // Arrange
+    const page1 = [anEnv('Default', true, false), anEnv('Dev', false, false)]
+    const page2 = [anEnv('Prod', false, true)]
+    scConnStub.onCall(0).resolves({data: page1, meta: aPagination(1, 2, 2, 2)})
+    scConnStub.onCall(1).resolves({data: page2, meta: aPagination(2, 2, 1, 2)})
+
+    // Expected
+    const envArray = [
+      ['Name', 'Id', 'Is Default', 'Is Production', 'Description'],
+      ...[...page1, ...page2].map((item: Environment) => [
+        item.name,
+        item.id,
+        item.isDefault,
+        item.isProduction,
+        item.description,
+      ]),
+    ]
+
+    // Act
+    const {stdout} = await runCommand('platform:env:list --all -s 2')
+
+    // Assert
+    expect(scConnStub.callCount).to.equal(2)
+    expect(scConnStub.getCall(0).args[0]).to.contain('?pageSize=2&pageNumber=1')
+    expect(scConnStub.getCall(1).args[0]).to.contain('?pageSize=2&pageNumber=2')
+    expect(stdout).to.contain(renderTable(envArray, {4: {width: 50, wrapWord: true}}))
+  })
+
+  it('returns all pages combined with --all --json', async () => {
+    // Arrange
+    scConnStub.onCall(0).resolves({data: [anEnv('Default', true, false)], meta: aPagination(1, 1, 1, 2)})
+    scConnStub.onCall(1).resolves({data: [anEnv('Prod', false, true)], meta: aPagination(2, 1, 1, 2)})
+
+    // Act
+    const {stdout} = await runCommand('platform:env:list --all --page-size=1 --json')
+
+    // Assert
+    const json = JSON.parse(stdout)
+    expect(json.data.map((e: Environment) => e.name)).to.deep.equal(['Default', 'Prod'])
+  })
+
+  it('rejects legacy --pageSize and --pageNumber flags', async () => {
+    // Act
+    const result = await runCommand('platform:env:list --pageSize=5 --pageNumber=2')
+
+    // Assert
+    expect(result.error).to.exist
+    expect(scConnStub.called).to.be.false
   })
 
   it('uses specified org when --org provided', async () => {

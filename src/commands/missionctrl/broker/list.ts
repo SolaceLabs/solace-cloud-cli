@@ -1,7 +1,14 @@
-import {renderTable, ScCommand} from '@dishantlangayan/sc-cli-core'
+import {ScCommand} from '@dishantlangayan/sc-cli-core'
 import {Flags} from '@oclif/core'
 
 import {resolveOrgConnection} from '../../../lib/org-utils.js'
+import {
+  createTableWriter,
+  DEFAULT_PAGE_SIZE,
+  fetchPages,
+  MAX_PAGE_SIZE,
+  paginationFlags,
+} from '../../../lib/pagination.js'
 import {EventBrokerListApiResponse, EventBrokerServiceDetail} from '../../../types/broker.js'
 
 export default class MissionctrlBrokerList extends ScCommand<typeof MissionctrlBrokerList> {
@@ -14,7 +21,8 @@ Token Permissions: [ \`mission_control:access\` **or** \`services:get\` **or** \
   static override examples = [
     '<%= config.bin %> <%= command.id %>',
     '<%= config.bin %> <%= command.id %> --org=my-org',
-    '<%= config.bin %> <%= command.id %> --alias=my-alias --name=MyBrokerName --pageNumber=1 --pageSize=10 --sort=name:asc',
+    '<%= config.bin %> <%= command.id %> --alias=my-alias --name=MyBrokerName --page-number=1 --page-size=10 --sort=name:asc',
+    '<%= config.bin %> <%= command.id %> --all',
   ]
   static override flags = {
     alias: Flags.string({
@@ -31,14 +39,7 @@ Token Permissions: [ \`mission_control:access\` **or** \`services:get\` **or** \
       description: 'Organization ID to use. If not specified, uses the default organization or alias if specified.',
       exclusive: ['alias'],
     }),
-    pageNumber: Flags.integer({
-      description: 'The page number to get. Defaults to 1',
-    }),
-    pageSize: Flags.integer({
-      description: 'The number of event broker services to return per page. Defaults to 10',
-      max: 100,
-      min: 1,
-    }),
+    ...paginationFlags('event broker services'),
     sort: Flags.string({
       description: `Sort the returned event broker services by attribute.
 
@@ -54,39 +55,67 @@ Token Permissions: [ \`mission_control:access\` **or** \`services:get\` **or** \
 
     const conn = await resolveOrgConnection(this, flags.org ?? flags.alias)
 
-    const pageSize = flags.pageSize ?? 10
-    const pageNumber = flags.pageNumber ?? 1
+    const pageSize = flags['page-size'] ?? (flags.all ? MAX_PAGE_SIZE : DEFAULT_PAGE_SIZE)
+    const pageNumber = flags['page-number'] ?? 1
 
     // API url
-    let apiUrl: string = `/missionControl/eventBrokerServices?pageSize=${pageSize}&pageNumber=${pageNumber}`
-    if (flags.sort) {
-      apiUrl += `&sort=${flags.sort}`
+    const buildUrl = (page: number, size: number): string => {
+      let apiUrl: string = `/missionControl/eventBrokerServices?pageSize=${size}&pageNumber=${page}`
+      if (flags.sort) {
+        apiUrl += `&sort=${flags.sort}`
+      }
+
+      if (flags.name) {
+        apiUrl += `&customAttributes=name=="${flags.name}"`
+      }
+
+      return apiUrl
     }
 
-    if (flags.name) {
-      apiUrl += `&customAttributes=name=="${flags.name}"`
-    }
-
-    // API call
-    const resp = await conn.get<EventBrokerListApiResponse>(apiUrl)
-
-    // Array to output as table
-    const brokerArray = [
+    // Output as table, streaming rows as each page is received when fetching all pages
+    const table = createTableWriter(
       ['Name', 'Id', 'Type', 'Version', 'Owned By', 'Datacenter Id', 'Service Class Id'],
-      ...resp.data.map((item: EventBrokerServiceDetail) => [
-        item.name,
-        item.id,
-        item.type,
-        item.eventBrokerServiceVersion,
-        item.ownedBy,
-        item.datacenterId,
-        item.serviceClassId,
-      ]),
-    ]
-    // Display results as a table
-    this.log(renderTable(brokerArray))
+      {
+        log: (msg) => this.log(msg),
+        stream: flags.all && !this.jsonEnabled(),
+        streamColumnConfig: {
+          0: {width: 20, wrapWord: true},
+          1: {width: 26},
+          2: {width: 8},
+          3: {width: 14},
+          4: {width: 14},
+          5: {width: 20},
+          6: {width: 18},
+        },
+      },
+    )
+
+    // API calls
+    let resp: EventBrokerListApiResponse | undefined
+    const allData: EventBrokerServiceDetail[] = []
+    for await (const page of fetchPages<EventBrokerServiceDetail, EventBrokerListApiResponse>(conn, buildUrl, {
+      all: flags.all,
+      pageNumber,
+      pageSize,
+    })) {
+      resp = page
+      allData.push(...page.data)
+      table.write(
+        page.data.map((item: EventBrokerServiceDetail) => [
+          item.name,
+          item.id,
+          item.type,
+          item.eventBrokerServiceVersion,
+          item.ownedBy,
+          item.datacenterId,
+          item.serviceClassId,
+        ]),
+      )
+    }
+
+    table.end()
 
     // Return raw json if --json flag is set
-    return resp
+    return {...resp, data: allData}
   }
 }
