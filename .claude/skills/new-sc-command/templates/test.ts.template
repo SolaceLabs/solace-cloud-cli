@@ -1,0 +1,126 @@
+// Template: a limited test file for one command — happy path, one variation, org resolution.
+// Reference implementations: test/commands/platform/env/{create,delete,update,display,list}.test.ts
+//
+// Replaces the whole file created alongside the command by:
+//   ./node_modules/.bin/oclif generate command platform:thing:create
+// Nothing from the generated 'hello world' test survives.
+//
+// Swap `post` for the verb(s) the command under test actually calls. Commands that
+// resolve a name to an id need two stubs (a `get` for the lookup plus the action verb).
+import {OrgManager, printObjectAsKeyValueTable, ScConnection} from '@dishantlangayan/sc-cli-core'
+import {runCommand} from '@oclif/test'
+import {expect} from 'chai'
+import * as sinon from 'sinon'
+
+import PlatformThingCreate from '../../../../src/commands/platform/thing/create.js'
+import {ThingApiResponse} from '../../../../src/types/thing.js'
+import {aThing} from '../../../util/test-utils'
+
+describe('platform:thing:create', () => {
+  let orgManagerStub: sinon.SinonStubbedInstance<OrgManager>
+  let getOrgManagerStub: sinon.SinonStub
+  let scConnStub: sinon.SinonStub
+  const thingName: string = 'MyTestThing'
+
+  beforeEach(() => {
+    // Stub OrgManager
+    orgManagerStub = sinon.createStubInstance(OrgManager)
+    getOrgManagerStub = sinon.stub(
+      PlatformThingCreate.prototype as unknown as Record<string, unknown>,
+      'getOrgManager',
+    ).resolves(orgManagerStub)
+
+    // Set up default org behavior
+    orgManagerStub.getDefaultOrg.resolves({
+      accessToken: 'test-token',
+      orgId: 'default-org',
+    })
+
+    // Set up getOrg behavior for specific org/alias lookups
+    orgManagerStub.getOrg.callsFake(async (identifier: string) => {
+      if (identifier === 'test-org' || identifier === 'test-alias') {
+        return {
+          accessToken: 'test-token',
+          alias: identifier === 'test-alias' ? 'test-alias' : undefined,
+          orgId: 'test-org-id',
+        }
+      }
+
+      return null
+    })
+
+    // Stub createConnection
+    const mockConnection = new ScConnection('https://api.solace.cloud', 'test-token')
+    orgManagerStub.createConnection.resolves(mockConnection)
+
+    // Stub ScConnection methods
+    scConnStub = sinon.stub(ScConnection.prototype, 'post')
+  })
+
+  afterEach(() => {
+    getOrgManagerStub.restore()
+    scConnStub.restore()
+  })
+
+  // Smoke test: catches flag-definition and import errors
+  it('runs platform:thing:create', async () => {
+    const {stdout} = await runCommand('platform:thing:create')
+    expect(stdout).to.contain('')
+  })
+
+  it(`runs platform:thing:create --name=${thingName}`, async () => {
+    // Arrange
+    const expectBody = {
+      name: thingName,
+    }
+    const expectResponse: ThingApiResponse = {
+      data: aThing(thingName),
+    }
+    scConnStub.returns(expectResponse)
+
+    // Act
+    const {stdout} = await runCommand(`platform:thing:create --name=${thingName}`)
+
+    // Assert
+    expect(orgManagerStub.getDefaultOrg.calledOnce).to.be.true
+    expect(orgManagerStub.createConnection.calledWith('default-org')).to.be.true
+    expect(scConnStub.getCall(0).calledWith('/platform/things', expectBody)).to.be.true
+    expect(stdout).to.contain(printObjectAsKeyValueTable(expectResponse.data as unknown as Record<string, unknown>))
+  })
+
+  it(`runs platform:thing:create --name=${thingName} --description="A description."`, async () => {
+    // Arrange — asserts the optional flag lands in the body under its camelCase API name
+    const expectBody = {
+      description: 'A description.',
+      name: thingName,
+    }
+    const expectResponse: ThingApiResponse = {
+      data: aThing(thingName),
+    }
+    expectResponse.data.description = expectBody.description
+    scConnStub.returns(expectResponse)
+
+    // Act
+    const {stdout} = await runCommand(`platform:thing:create --name=${thingName} --description="A description."`)
+
+    // Assert
+    expect(scConnStub.getCall(0).calledWith('/platform/things', expectBody)).to.be.true
+    expect(stdout).to.contain(printObjectAsKeyValueTable(expectResponse.data as unknown as Record<string, unknown>))
+  })
+
+  it(`runs platform:thing:create --alias=test-alias --name=${thingName}`, async () => {
+    // Arrange
+    const expectResponse: ThingApiResponse = {
+      data: aThing(thingName),
+    }
+    scConnStub.returns(expectResponse)
+
+    // Act
+    await runCommand(`platform:thing:create --alias=test-alias --name=${thingName}`)
+
+    // Assert
+    expect(orgManagerStub.getOrg.calledWith('test-alias')).to.be.true
+    expect(orgManagerStub.createConnection.calledWith('test-alias')).to.be.true
+    expect(orgManagerStub.getDefaultOrg.called).to.be.false
+  })
+})

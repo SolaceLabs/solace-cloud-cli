@@ -36,6 +36,20 @@ export function anEnv(name: string, isDefault: boolean, isProd: boolean) {
   }
 }
 
+export function aUser(firstName: string, lastName: string) {
+  return {
+    email: `${firstName.toLowerCase()}.${lastName.toLowerCase()}@example.com`,
+    firstName,
+    groups: [],
+    id: `id${firstName}${lastName}`,
+    lastName,
+    organizationId: 'some-org-id',
+    roles: ['org-admin'],
+    state: 'ACTIVE',
+    type: 'user',
+  }
+}
+
 export function aBroker(brokerId: string, brokerName: string): EventBrokerServiceDetail {
   return {
     adminState: 'START',

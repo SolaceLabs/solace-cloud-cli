@@ -1,0 +1,103 @@
+// Template: GET a paginated collection, rendered as a table.
+// Reference implementation: src/commands/platform/env/list.ts
+// Replaces the body of the file created by:
+//   ./node_modules/.bin/oclif generate command platform:thing:list
+import {ScCommand} from '@dishantlangayan/sc-cli-core'
+import {Flags} from '@oclif/core'
+
+import {resolveOrgConnection} from '../../../lib/org-utils.js'
+import {
+  createTableWriter,
+  DEFAULT_PAGE_SIZE,
+  fetchPages,
+  MAX_PAGE_SIZE,
+  paginationFlags,
+} from '../../../lib/pagination.js'
+import {Thing, ThingListApiResponse} from '../../../types/thing.js'
+
+export default class PlatformThingList extends ScCommand<typeof PlatformThingList> {
+  static override args = {}
+  static override description = `Get a list of all Things.
+
+  Required token permissions: [ things:view ]`
+  static override examples = [
+    '<%= config.bin %> <%= command.id %>',
+    '<%= config.bin %> <%= command.id %> --org=my-org',
+    '<%= config.bin %> <%= command.id %> --alias=my-alias --page-number=1 --page-size=10 --sort=name:ASC',
+    '<%= config.bin %> <%= command.id %> --all',
+  ]
+  static override flags = {
+    alias: Flags.string({
+      char: 'a',
+      description: 'Organization alias to use. If not specified, uses the default organization.',
+      exclusive: ['org'],
+    }),
+    name: Flags.string({
+      char: 'n',
+      description: 'Name of the thing to match on.',
+    }),
+    org: Flags.string({
+      char: 'o',
+      description: 'Organization ID to use. If not specified, uses the default organization or alias if specified.',
+      exclusive: ['alias'],
+    }),
+    // Supplies --all, --page-number, --page-size. Never hand-roll these.
+    ...paginationFlags('things', {pageNumber: 'p', pageSize: 's'}),
+    sort: Flags.string({
+      description: 'The query (fieldName:<ASC/DESC>) used to sort the thing list in the response.',
+    }),
+  }
+
+  public async run(): Promise<ThingListApiResponse> {
+    const {flags} = await this.parse(PlatformThingList)
+
+    const conn = await resolveOrgConnection(this, flags.org ?? flags.alias)
+
+    const pageSize = flags['page-size'] ?? (flags.all ? MAX_PAGE_SIZE : DEFAULT_PAGE_SIZE)
+    const pageNumber = flags['page-number'] ?? 1
+
+    // API url
+    const buildUrl = (page: number, size: number): string => {
+      let apiUrl: string = `/platform/things?pageSize=${size}&pageNumber=${page}`
+      if (flags.sort) {
+        apiUrl += `&sort=${flags.sort}`
+      }
+
+      return apiUrl
+    }
+
+    // Output as table, streaming rows as each page is received when fetching all pages
+    const table = createTableWriter(['Name', 'Id', 'Description'], {
+      columnConfig: {2: {width: 50, wrapWord: true}},
+      log: (msg) => this.log(msg),
+      stream: flags.all && !this.jsonEnabled(),
+      streamColumnConfig: {
+        0: {width: 20, wrapWord: true},
+        1: {width: 26},
+        2: {width: 50, wrapWord: true},
+      },
+    })
+
+    // API calls
+    // perfectionist/sort-union-types sorts union members case-insensitively, so this
+    // order depends on your resource name: `Thing` < `undefined`, but a name sorting
+    // after `undefined` (e.g. UserListApiResponse) must be written the other way round.
+    // Run `eslint --fix` on this file after renaming and it will sort it for you.
+    let resp: ThingListApiResponse | undefined
+    const allData: Thing[] = []
+    for await (const page of fetchPages<Thing, ThingListApiResponse>(conn, buildUrl, {
+      all: flags.all,
+      pageNumber,
+      pageSize,
+    })) {
+      resp = page
+      allData.push(...page.data)
+      table.write(page.data.map((item: Thing) => [item.name, item.id, item.description]))
+    }
+
+    table.end()
+
+    // Return raw json if --json flag is set
+    return {...(resp as ThingListApiResponse), data: allData}
+  }
+}

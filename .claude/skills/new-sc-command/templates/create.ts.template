@@ -1,0 +1,74 @@
+// Template: POST a new resource.
+// Reference implementation: src/commands/platform/env/create.ts
+// Replaces the body of the file created by:
+//   ./node_modules/.bin/oclif generate command platform:thing:create
+// Replace Thing/thing/things and the flags with the real resource.
+import {printObjectAsKeyValueTable, ScCommand} from '@dishantlangayan/sc-cli-core'
+import {Flags} from '@oclif/core'
+
+import {resolveOrgConnection} from '../../../lib/org-utils.js'
+import {ThingApiResponse} from '../../../types/thing.js'
+
+export default class PlatformThingCreate extends ScCommand<typeof PlatformThingCreate> {
+  static override args = {}
+  static override description = `Create a new thing.
+
+  Token Permissions: [ things:edit ]`
+  static override examples = [
+    '<%= config.bin %> <%= command.id %> --name=MyThing',
+    '<%= config.bin %> <%= command.id %> --org=my-org --name=MyThing --description="My thing description"',
+    '<%= config.bin %> <%= command.id %> --alias=my-alias --name=MyThing',
+  ]
+  // Keys must be alphabetically sorted (perfectionist/sort-objects).
+  static override flags = {
+    alias: Flags.string({
+      char: 'a',
+      description: 'Organization alias to use. If not specified, uses the default organization.',
+      exclusive: ['org'],
+    }),
+    description: Flags.string({
+      char: 'd',
+      description: 'Description of the thing to create.',
+    }),
+    name: Flags.string({
+      char: 'n',
+      description: 'Name of the thing to create.',
+      required: true,
+    }),
+    org: Flags.string({
+      char: 'o',
+      description: 'Organization ID to use. If not specified, uses the default organization or alias if specified.',
+      exclusive: ['alias'],
+    }),
+    // kebab-case flag, camelCase API field:
+    // 'some-field': Flags.string({description: 'Maps to the API field someField.'}),
+  }
+
+  public async run(): Promise<ThingApiResponse> {
+    const {flags} = await this.parse(PlatformThingCreate)
+
+    const name = flags.name ?? ''
+    const desc = flags.description ?? ''
+    // const someField = flags['some-field'] ?? ''
+
+    const conn = await resolveOrgConnection(this, flags.org ?? flags.alias)
+
+    // API url — no /api/v2 prefix, ScConnection adds it
+    const apiUrl: string = `/platform/things`
+    // API body — conditional spreads omit unset optional fields
+    const body = {
+      ...(desc && {description: desc}),
+      name,
+      // ...(someField && {someField}),
+    }
+
+    // API call
+    const resp = await conn.post<ThingApiResponse>(apiUrl, body)
+
+    // Display results
+    this.log(printObjectAsKeyValueTable(resp.data as unknown as Record<string, unknown>))
+
+    // Return raw json if --json flag is set
+    return resp
+  }
+}

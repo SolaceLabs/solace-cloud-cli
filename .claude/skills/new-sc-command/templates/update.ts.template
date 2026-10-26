@@ -1,0 +1,93 @@
+// Template: PUT/PATCH an existing resource, addressed by id or name.
+// Reference implementation: src/commands/platform/env/update.ts
+// Replaces the body of the file created by:
+//   ./node_modules/.bin/oclif generate command platform:thing:update
+import {printObjectAsKeyValueTable, ScCommand} from '@dishantlangayan/sc-cli-core'
+import {Flags} from '@oclif/core'
+
+import {resolveOrgConnection} from '../../../lib/org-utils.js'
+import {ThingApiResponse, ThingListApiResponse} from '../../../types/thing.js'
+
+export default class PlatformThingUpdate extends ScCommand<typeof PlatformThingUpdate> {
+  static override args = {}
+  static override description = `Modify a thing's attributes
+
+  Use either the Thing's ID (--thing-id) or name of the Thing (--name).
+
+  Token Permissions: [ things:edit ]
+  `
+  static override examples = [
+    '<%= config.bin %> <%= command.id %> --name=MyThingName --new-name=MyNewThingName',
+    '<%= config.bin %> <%= command.id %> --thing-id=MyThingId --new-name=MyNewThingName --description="Updated description"',
+    '<%= config.bin %> <%= command.id %> --alias=my-alias --name=MyThingName --new-name=MyNewThingName',
+  ]
+  static override flags = {
+    alias: Flags.string({
+      char: 'a',
+      description: 'Organization alias to use. If not specified, uses the default organization.',
+      exclusive: ['org'],
+    }),
+    description: Flags.string({
+      char: 'd',
+      description: 'Description of the thing to update.',
+    }),
+    name: Flags.string({
+      char: 'n',
+      description: 'Current name of the thing.',
+      exactlyOne: ['thing-id', 'name'],
+    }),
+    'new-name': Flags.string({
+      description: 'New name of the thing.',
+    }),
+    org: Flags.string({
+      char: 'o',
+      description: 'Organization ID to use. If not specified, uses the default organization or alias if specified.',
+      exclusive: ['alias'],
+    }),
+    'thing-id': Flags.string({
+      char: 't',
+      description: 'Id of the thing.',
+      exactlyOne: ['thing-id', 'name'],
+    }),
+  }
+
+  public async run(): Promise<ThingApiResponse> {
+    const {flags} = await this.parse(PlatformThingUpdate)
+
+    const desc = flags.description ?? ''
+    const name = flags.name ?? ''
+    const newName = flags['new-name'] ?? ''
+    const thingId = flags['thing-id'] ?? ''
+
+    // API body — only send what the user actually passed
+    const body = {
+      ...(desc && {description: desc}),
+      ...(newName && {name: newName}),
+    }
+
+    const conn = await resolveOrgConnection(this, flags.org ?? flags.alias)
+
+    // API url
+    let apiUrl: string = `/platform/things`
+    let thingIdToUpdate: string | undefined = thingId
+
+    // If a name was provided, resolve it to exactly one id first
+    if (name) {
+      const getThingApiUrl = `${apiUrl}?name=${name}`
+      const resp = await conn.get<ThingListApiResponse>(getThingApiUrl)
+      if (resp.data.length > 1) {
+        this.error(`Multiple things found with: ${name}. Exactly one thing must match the provided name.`)
+      } else {
+        thingIdToUpdate = resp.data[0]?.id
+      }
+    }
+
+    // API call to update by id
+    apiUrl += `/${thingIdToUpdate}`
+    const resp = await conn.put<ThingApiResponse>(apiUrl, body)
+
+    this.log(printObjectAsKeyValueTable(resp.data as unknown as Record<string, unknown>))
+
+    return resp
+  }
+}
