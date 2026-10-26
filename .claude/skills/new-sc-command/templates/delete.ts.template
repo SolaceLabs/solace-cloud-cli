@@ -1,0 +1,109 @@
+// Template: DELETE a resource, addressed by id or name, with a confirmation prompt.
+// Reference implementation: src/commands/platform/env/delete.ts
+// Replaces the body of the file created by:
+//   ./node_modules/.bin/oclif generate command platform:thing:delete
+import {ScCommand} from '@dishantlangayan/sc-cli-core'
+import {confirm} from '@inquirer/prompts'
+import {Flags} from '@oclif/core'
+
+import {resolveOrgConnection} from '../../../lib/org-utils.js'
+import {ThingListApiResponse} from '../../../types/thing.js'
+
+export default class PlatformThingDelete extends ScCommand<typeof PlatformThingDelete> {
+  static override args = {}
+  static override description = `Delete a thing using either its name or unique identifier.
+
+  Token Permissions: [ things:edit ]`
+  static override examples = [
+    '<%= config.bin %> <%= command.id %> --name=MyThingName',
+    '<%= config.bin %> <%= command.id %> --thing-id=MyThingId',
+    '<%= config.bin %> <%= command.id %> --org=my-org --name=MyThingName',
+    '<%= config.bin %> <%= command.id %> --thing-id=MyThingId --no-prompt',
+  ]
+  static override flags = {
+    alias: Flags.string({
+      char: 'a',
+      description: 'Organization alias to use. If not specified, uses the default organization.',
+      exclusive: ['org'],
+    }),
+    name: Flags.string({
+      char: 'n',
+      description: 'Name of the thing.',
+      exactlyOne: ['thing-id', 'name'],
+    }),
+    'no-prompt': Flags.boolean({
+      default: false,
+      description: 'Skip confirmation prompt and assume Yes',
+    }),
+    org: Flags.string({
+      char: 'o',
+      description: 'Organization ID to use. If not specified, uses the default organization or alias if specified.',
+      exclusive: ['alias'],
+    }),
+    'thing-id': Flags.string({
+      char: 't',
+      description: 'Id of the thing.',
+      exactlyOne: ['thing-id', 'name'],
+    }),
+  }
+
+  public async run(): Promise<{message: string}> {
+    const {flags} = await this.parse(PlatformThingDelete)
+
+    const name = flags.name ?? ''
+    const thingId = flags['thing-id'] ?? ''
+
+    const conn = await resolveOrgConnection(this, flags.org ?? flags.alias)
+
+    // API url
+    let apiUrl: string = `/platform/things`
+    let thingIdToDelete: string | undefined = thingId
+
+    // If a name was provided, resolve it to exactly one id first
+    let foundMultiple: boolean = false
+    if (name) {
+      const getThingApiUrl = `${apiUrl}?name=${name}`
+      const resp = await conn.get<ThingListApiResponse>(getThingApiUrl)
+      if (resp.data.length > 1) {
+        foundMultiple = true
+      } else {
+        thingIdToDelete = resp.data[0]?.id
+      }
+    }
+
+    let message = ''
+    if (foundMultiple) {
+      // this.warn does not return never, so the else branch is required
+      message = `Multiple things found with: ${name}. Exactly one thing must match the provided name.`
+      this.warn(message)
+    } else {
+      // Confirm deletion unless --no-prompt flag is set
+      if (!flags['no-prompt']) {
+        const identifier = name || thingId
+        try {
+          const shouldProceed = await confirm({
+            default: false,
+            message: `Are you sure you want to delete the thing '${identifier}'?`,
+          })
+
+          if (!shouldProceed) {
+            this.log('Deletion cancelled.')
+            this.exit(0)
+          }
+        } catch {
+          // User cancelled the confirmation (Ctrl+C)
+          this.log('Deletion cancelled.')
+          this.exit(0)
+        }
+      }
+
+      apiUrl += `/${thingIdToDelete}`
+      await conn.delete<string>(apiUrl)
+      message = `Thing with id '${thingIdToDelete}' has been deleted successfully.`
+      this.log(message)
+    }
+
+    // Return raw json if --json flag is set
+    return {message}
+  }
+}

@@ -1,0 +1,75 @@
+// Template: GET a single resource, by id or by name.
+// Reference implementation: src/commands/platform/env/display.ts
+// Replaces the body of the file created by:
+//   ./node_modules/.bin/oclif generate command platform:thing:display
+import {printObjectAsKeyValueTable, ScCommand} from '@dishantlangayan/sc-cli-core'
+import {Flags} from '@oclif/core'
+
+import {resolveOrgConnection} from '../../../lib/org-utils.js'
+import {ThingApiResponse, ThingListApiResponse} from '../../../types/thing.js'
+
+export default class PlatformThingDisplay extends ScCommand<typeof PlatformThingDisplay> {
+  static override args = {}
+  static override description = `Display information about a Thing.
+
+  Use either the Thing's ID (--thing-id) or name of the Thing (--name).
+
+  Required token permissions: [ things:view ]`
+  static override examples = [
+    '<%= config.bin %> <%= command.id %> --name=MyThingName',
+    '<%= config.bin %> <%= command.id %> --thing-id=MyThingId',
+    '<%= config.bin %> <%= command.id %> --org=my-org --thing-id=MyThingId',
+    '<%= config.bin %> <%= command.id %> --alias=my-alias --name=MyThingName',
+  ]
+  static override flags = {
+    alias: Flags.string({
+      char: 'a',
+      description: 'Organization alias to use. If not specified, uses the default organization.',
+      exclusive: ['org'],
+    }),
+    name: Flags.string({
+      char: 'n',
+      description: 'Name of the thing.',
+      exactlyOne: ['thing-id', 'name'],
+    }),
+    org: Flags.string({
+      char: 'o',
+      description: 'Organization ID to use. If not specified, uses the default organization or alias if specified.',
+      exclusive: ['alias'],
+    }),
+    'thing-id': Flags.string({
+      char: 't',
+      description: 'Id of the thing.',
+      exactlyOne: ['thing-id', 'name'],
+    }),
+  }
+
+  public async run(): Promise<ThingApiResponse | ThingListApiResponse> {
+    const {flags} = await this.parse(PlatformThingDisplay)
+
+    const name = flags.name ?? ''
+    const thingId = flags['thing-id'] ?? ''
+
+    const conn = await resolveOrgConnection(this, flags.org ?? flags.alias)
+
+    // API url
+    // If name provided, get all things matching provided name
+    // If id provided, get the thing with that id
+    let apiUrl: string = `/platform/things`
+    let resp: ThingApiResponse | ThingListApiResponse
+    if (thingId) {
+      apiUrl += `/${thingId}`
+      resp = await conn.get<ThingApiResponse>(apiUrl)
+      this.log(printObjectAsKeyValueTable(resp.data as unknown as Record<string, unknown>))
+    } else {
+      apiUrl += `?name=${name}`
+      resp = await conn.get<ThingListApiResponse>(apiUrl)
+      for (const thing of resp.data) {
+        this.log(printObjectAsKeyValueTable(thing as unknown as Record<string, unknown>))
+      }
+    }
+
+    // Return raw json if --json flag is set
+    return resp
+  }
+}
